@@ -87,38 +87,33 @@ void execRun(){
             exit(0);
         }
         else{
-            int wtret = wait(0);
-            if(-1 == wtret){
+            int wtret;
+            int wtpid = wait(&wtret);
+            if(-1 == wtpid){
                 perror("wait failed");
                 exit(1);
             }
-            else if (wtret == 1){
-                cmdpass = false;
-            }
-            else{
+
+            if (wtret == 0){
                 cmdpass = true;
             }
+            else{
+                cmdpass = false;
+            }
         }
-        if (!cmdpass && failstp)
-            break;
-cout << "starting block3" << endl;
+        if (!cmdpass && failstp || cmdpass && !failstp)
+            return;
         strcpy(svand,cmdsave);
         strcpy(svor,cmdsave);
         strcpy(svcln,cmdsave);
-cout << "passed the 3block" << endl;
         tokand = strtok_r(NULL, "&", &svand);
         tokor = strtok_r(NULL, "|", &svor);
         tokcln = strtok_r(NULL, ";", &svcln);
-cout << "starting to count" << endl;
-cout << tokcln << endl;
-        string andtemp = tokand;
-cout << "WE HAVE NOT FAILED" << endl;
-        int lenand = andtemp.size();
-        string ortemp = tokor;
-        int lenor = ortemp.size();
-        string clntemp = tokcln;
-        int lencln = clntemp.size();
-cout << "ending counting " << endl;
+        if(tokand == NULL || tokor == NULL || tokcln == NULL)
+            return;
+        size_t lenand = strlen(tokand);
+        size_t lenor = strlen(tokor);
+        size_t lencln = strlen(tokcln);
         if(lenand > lenor && lenand > lencln){
             strcpy(cmdsave,svand);
             strcpy(cmd,tokand);
