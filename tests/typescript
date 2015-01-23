@@ -1,0 +1,106 @@
+Script started on Fri 23 Jan 2015 10:16:33 AM PST
+]0;andy@SlowKing: ~/Documents/rshellandy@SlowKing:~/Documents/rshell$ make
+g++ -std=c++11 -Wall -Werror -ansi -pedantic rshell.cpp -o rshell
+]0;andy@SlowKing: ~/Documents/rshellandy@SlowKing:~/Documents/rshell$ ./rshell
+Username could not be obtained: No such file or directory
+unknown@SlowKing$ #testing od  code
+unknown@SlowKing$ ls #testing commands
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ pwd
+/home/andy/Documents/rshell
+unknown@SlowKing$ ls -a #testing commands with a flag
+.   a.out  Makefile	   rshell	rshell.cpp	 tests
+..  .git   .README.MD.swp  rshell2.cpp	.rshell.cpp.swp  typescript
+unknown@SlowKing$ ls -a -r -l #testing multiple flags for a command
+total 184
+-rw-rw-r-- 1 andy andy     0 Jan 23 10:16 typescript
+drwxrwxr-x 2 andy andy  4096 Jan 23 07:39 tests
+-rw-r--r-- 1 andy andy 16384 Jan 23 10:08 .rshell.cpp.swp
+-rw-rw-r-- 1 andy andy  3562 Jan 23 10:08 rshell.cpp
+-rw-rw-r-- 1 andy andy  3458 Jan 23 09:12 rshell2.cpp
+-rwxrwxr-x 1 andy andy 29289 Jan 23 10:16 rshell
+-rw------- 1 andy andy 12288 Jan 15 16:20 .README.MD.swp
+-rw-rw-r-- 1 andy andy   259 Jan 23 08:18 Makefile
+drwxrwxr-x 8 andy andy  4096 Jan 23 09:51 .git
+-rwxrwxr-x 1 andy andy 29347 Jan 23 09:12 a.out
+drwxr-xr-x 3 andy andy  4096 Jan 21 18:27 ..
+drwxrwxr-x 4 andy andy  4096 Jan 23 10:16 .
+unknown@SlowKing$ ls -l-    -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -l -  l -l #testing a large number of flags
+total 128
+-rwxrwxr-x 1 andy andy 29347 Jan 23 09:12 a.out
+-rw-rw-r-- 1 andy andy   259 Jan 23 08:18 Makefile
+-rwxrwxr-x 1 andy andy 29289 Jan 23 10:16 rshell
+-rw-rw-r-- 1 andy andy  3458 Jan 23 09:12 rshell2.cpp
+-rw-rw-r-- 1 andy andy  3562 Jan 23 10:08 rshell.cpp
+drwxrwxr-x 2 andy andy  4096 Jan 23 07:39 tests
+-rw-rw-r-- 1 andy andy     0 Jan 23 10:16 typescript
+unknown@SlowKing$ # ls -aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa #testing r a really long flag
+.   a.out  Makefile	   rshell	rshell.cpp	 tests
+..  .git   .README.MD.swp  rshell2.cpp	.rshell.cpp.swp  typescript
+unknown@SlowKing$ ls ls lsl s    ls ls #testing multiple       tiple commands without connectors
+ls: cannot access ls: No such file or directory
+ls: cannot access ls: No such file or directory
+ls: cannot access ls: No such file or directory
+ls: cannot access ls: No such file or directory
+unknown@SlowKing$ -l ls #testing c flags before connectors
+execvp failed: No such file or directory
+unknown@SlowKing$ #asd    asdfasdfasdfasfd #testing gibv   ibe berish command
+execvp failed: No such file or directory
+unknown@SlowKing$ testing a line of tuyp   ped g     yped giberish     berish
+execvp failed: No such file or directory
+unknown@SlowKing$ #testing spaces
+unknown@SlowKing$                          
+unknown@SlowKing$ #testing tabs  , which should be treated a  s a bad command
+unknown@SlowKing$ 										
+execvp failed: No such file or directory
+unknown@SlowKing$ #testing when t nothing is typed in  
+unknown@SlowKing$ 
+unknown@SlowKing$                                     ls #spaces before the command
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ ls                                                    #lots of spaces after the command
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ ls -                                     -a s #spaces between the flag
+.   a.out  Makefile	   rshell	rshell.cpp	 tests
+..  .git   .README.MD.swp  rshell2.cpp	.rshell.cpp.swp  typescript
+unknown@SlowKing$ ls #    ls #checking to see if nothing is printed after comments no matter what; ls; pwd
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ ; #testing connecotrs     ctors be y themselves. Should ac           , . Should execute white                      
+unknown@SlowKing$ ;;;;;;;
+unknown@SlowKing$ ;&&;;;;||| #prompt should               should accp ept singlue     ular as well as double && and ||. when not  parameters sh   , should act like true was ex ntern ed in
+unknown@SlowKing$ &
+unknown@SlowKing$ |
+unknown@SlowKing$ ls & ls
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ true && ls
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ false && ls
+unknown@SlowKing$ true || ls
+unknown@SlowKing$ true  &&ls #white  space should not matter
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ true              &&ls
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ true  &&
+unknown@SlowKing$ &&true
+unknown@SlowKing$ ls .. #testing if it wu  support directories
+reasons.txt  rshell
+unknown@SlowKing$ #testing exit!  
+unknown@SlowKing$ exit
+]0;andy@SlowKing: ~/Documents/rshellandy@SlowKing:~/Documents/rshell$ #finished [K[K[K[K[K[K[K[K[Ktesting finished[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kbasic testing finished[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K./rshell
+Username could not be obtained: No such file or directory
+unknown@SlowKing$ #testing random insane things..  
+unknown@SlowKing$ && ls && ||| | false
+a.out  Makefile  rshell  rshell2.cpp  rshell.cpp  tests  typescript
+unknown@SlowKing$ l && asdfasdf || false     ls
+execvp failed: No such file or directory
+unknown@SlowKing$ I r can't think of many more commands to run...
+execvp failed: No such file or directory
+unknown@SlowKing$ ||;;    this      T #attempting to run rshell in rshell
+unknown@SlowKing$ ./rshell
+Username could not be obtained: No such file or directory
+unknown@SlowKing$ rshell        #rhsell     shell ception!
+unknown@SlowKing$ exit
+unknown@SlowKing$ still in          # exit
+]0;andy@SlowKing: ~/Documents/rshellandy@SlowKing:~/Documents/rshell$ exit
+exit
+
+Script done on Fri 23 Jan 2015 10:28:17 AM PST
