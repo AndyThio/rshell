@@ -1,9 +1,13 @@
-build:
-	g++ -std=c++11 -Wall -Werror -ansi -pedantic rshell.cpp -o rshell
-main: rshell
-	rm rshell
-	g++ -std=c++11 -Wall -Werror -ansi -pedantic rshell.cpp -o rshell
+#variables
+VPATH = src
+CFLAGS = -std=c++11 -Wall -Werror -ansi -pedantic
+FILES = $(addprefix src/, rshell.cpp)
+#target
+bin/rshell: rshell.cpp | bin
+	g++ $(CFLAGS) $(FILES) -o $@
 
-gdb: rshell
-	rm rshell
-	g++ -std=c++11 -g -Wall -Werror -ansi -pedantic rshell.cpp -o rshell
+bin:
+	mkdir bin
+
+clean:
+	rm -rf bin
