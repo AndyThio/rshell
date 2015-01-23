@@ -35,25 +35,17 @@ void usernam(string& nam){
     return;
 }
 
-void execRun(){
+void execRun(char* uname, char hnam[]){
     string uin;
-    string uname;
-    char hnam[512];
-    size_t hnamLen = 512;
     char* cmdsave;
 
-    if(gethostname(hnam, hnamLen) == -1){
-        perror("gethostname failed");
-        exit(1);
-    }
-    usernam(uname);
-        cout << uname << "@" << hnam <<  "$ ";
+    cout << uname << "@" << hnam <<  "$ ";
     getline(cin, uin);
     char* cstr = new char [uin.length()+1];
     strcpy(cstr, uin.c_str());
     vector<int> symbs;
     cstr = strtok(cstr, "#");
-
+cout << cstr << endl;
     for(unsigned j = 0; j < uin.size(); j++){
         if(uin.at(j) == '&' && uin.at(j+1) == '&'){
             symbs.push_back(0);
@@ -73,7 +65,8 @@ void execRun(){
     symbs.push_back(2);
 
     char* cmdl = strtok_r(cstr, ";&|", &cmdsave);
-
+if(cmdl == NULL)
+cout << "cmdl is null"  << endl;
     while(symbs.size() != 0 || cmdl != NULL){
         char* cmd = strtok(cmdl, " ");
         char* argv[2048];
@@ -136,8 +129,21 @@ void execRun(){
 }
 
 int main(){
+    char* uname;
+    char hnam[512];
+    size_t hnamLen = 512;
+    if(gethostname(hnam, hnamLen) == -1){
+    perror("gethostname failed");
+    exit(1);
+    }
+    uname = getlogin();
+    if(uname ==  NULL){
+        perror("Username could not be obtained");
+        char nam[] = "unknown";
+        uname = nam;
+    }
     while(true){
-        execRun();
+        execRun(uname,hnam);
     }
     return 0;
 }
