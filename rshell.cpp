@@ -41,11 +41,12 @@ void execRun(char* uname, char hnam[]){
 
     cout << uname << "@" << hnam <<  "$ ";
     getline(cin, uin);
+    if((uin.size() != 0 && uin.at(0) == '#')|| uin.size() == 0)
+        return;
     char* cstr = new char [uin.length()+1];
     strcpy(cstr, uin.c_str());
     vector<int> symbs;
     cstr = strtok(cstr, "#");
-cout << cstr << endl;
     for(unsigned j = 0; j < uin.size(); j++){
         if(uin.at(j) == '&' && uin.at(j+1) == '&'){
             symbs.push_back(0);
@@ -65,10 +66,13 @@ cout << cstr << endl;
     symbs.push_back(2);
 
     char* cmdl = strtok_r(cstr, ";&|", &cmdsave);
-if(cmdl == NULL)
-cout << "cmdl is null"  << endl;
     while(symbs.size() != 0 || cmdl != NULL){
         char* cmd = strtok(cmdl, " ");
+        if(cmd == NULL){
+            symbs.erase(symbs.begin());
+            cmdl = strtok_r(NULL, "&|;", &cmdsave);
+        }
+        else{
         char* argv[2048];
         clr_argv(argv);
         argv[0] = cmd;
@@ -125,6 +129,7 @@ cout << "cmdl is null"  << endl;
         }
         symbs.erase(symbs.begin());
         cmdl = strtok_r(NULL, "&|;", &cmdsave);
+        }
     }
 }
 
