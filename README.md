@@ -3,19 +3,19 @@
 ## Program Overview
 This program was written to create a simple shell that could handle simple `execvp` commands and work similar to `bash`.
     Features include:
-    *`execvp` commands
-    *Connectors such as:
-        *`&&`
-        *`||`
-        *`;`
+    * `execvp` commands
+    * Connectors such as:
+        * `&&`
+        * `||`
+        * `;`
 
 ## How to Use
     1. The program will prompt you with `username@machine$` and wait for your input.
-        *`username` and `machine` will differ depending on account and machine you are using. E.g. if I was on my computer it would show up as `andy@SlowKing$`.
+        * `username` and `machine` will differ depending on account and machine you are using. E.g. if I was on my computer it would show up as `andy@SlowKing$`.
     2. Input an execvp command (e.g. `ls`, `pwd`, or `false`)
     3. Include any wanted flags (e.g. `-a`, `-l`, or `-r`)
     4. Press enter and rshell will run your command and prompt you for another command.
-        *rshell will not execute bad commands and instead print out an error message.
+        * rshell will not execute bad commands and instead print out an error message.
 5. When finished, type `exit` into the prompt to close it.
 
 ## Prerequisites
@@ -35,11 +35,11 @@ This program was written to create a simple shell that could handle simple `exec
     `bin/rshell`
 
 ## Bug/Known Issues/Limitations
-*Currently a single command + flag is limited to 2048 chars (including `'\0'`)
-*When connected are entered alone, such as:
+* Currently a single command + flag is limited to 2048 chars (including `'\0'`)
+* When connected are entered alone, such as:
     `andy@SlowKing$ &&`
     `andy@SlowKing$ &&||;;;||||&&`
  they will execute as if they were all `;`, but only when they are alone with no commands or arguements. This is done intentionally.
-    *This is different from bash which returns a syntax error.
- *A single `&` or `|` will be treated the same as `&&` or `||` respectively.
+    * This is different from bash which returns a syntax error.
+ * A single `&` or `|` will be treated the same as `&&` or `||` respectively.
 
