@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <string.h>
 #include <unistd.h>
 #include <cstring>
@@ -6,6 +7,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <vector>
 using namespace std;
 
 void printo(char** p){
@@ -38,10 +40,7 @@ void execRun(){
     string uname;
     char hnam[512];
     size_t hnamLen = 512;
-    char* cmdsave, *svand, *svor, *svcln;
-    char* tokand, *tokor, *tokcln;
-    bool failstp = false;
-    bool boolcln = false;
+    char* cmdsave;
 
     if(gethostname(hnam, hnamLen) == -1){
         perror("gethostname failed");
@@ -52,31 +51,32 @@ void execRun(){
     getline(cin, uin);
     char* cstr = new char [uin.length()+1];
     strcpy(cstr, uin.c_str());
+    vector<int> symbs;
+    cstr = strtok(cstr, "#");
+
+    for(unsigned j = 0; j < uin.size(); j++){
+        if(uin.at(j) == '&' && uin.at(j+1) == '&'){
+            symbs.push_back(0);
+            j++;
+        }
+        else if(uin.at(j) == '&' && uin.at(j) != '&')
+            symbs.push_back(0);
+        else if( uin.at(j) == '|' && uin.at(j+1) == '|'){
+            symbs.push_back(1);
+            j++;
+        }
+        else if(uin.at(j) == '|' && uin.at(j+1) != '|')
+            symbs.push_back(1);
+        else if(uin.at(j) == ';')
+            symbs.push_back(2);
+    }
+    symbs.push_back(2);
 
     char* cmdl = strtok_r(cstr, ";&|", &cmdsave);
-    tokand = strtok(cstr, "&");
-    tokor = strtok(cstr, "|");
-    tokcln = strtok(cstr, ";");
-cout << tokand << endl << tokor << endl << tokcln << endl;
-    size_t lenand = strlen(tokand);
-    size_t lenor = strlen(tokor);
-    size_t lencln = strlen(tokcln);
-cout << lenand << endl << lenor << endl << lencln << endl;
-    if(lenand > lenor && lenand > lencln){
-        failstp=true;
-        boolcln = false;
-    }
-    else if(lenor > lenand && lenor > lencln){
-        failstp=false;
-        boolcln = false;
-    }
-    else{
-        boolcln = true;
-    }
 
-    while( cmdl != NULL){
+    while(symbs.size() != 0 || cmdl != NULL){
         char* cmd = strtok(cmdl, " ");
-        char* argv[512];
+        char* argv[2048];
         clr_argv(argv);
         argv[0] = cmd;
         char* ctemp = strtok(NULL," ");
@@ -118,34 +118,20 @@ cout << lenand << endl << lenor << endl << lencln << endl;
                 cmdpass = false;
             }
         }
-cout << "cmdpass: " << cmdpass << endl << "failstp: " << failstp << endl;
-        if (!cmdpass && failstp || cmdpass && !failstp && boolcln)
+        if(symbs.size() == 0)
             return;
-        strcpy(svand,cmdsave);
-        strcpy(svor,cmdsave);
-        strcpy(svcln,cmdsave);
-cout << " WE ARE DOING CMDL" << endl;
+        if(symbs.at(0) == 0){
+            if(cmdpass == false){
+                return;
+            }
+        }
+        else if (symbs.at(0) == 1){
+            if(cmdpass == true){
+                return;
+            }
+        }
+        symbs.erase(symbs.begin());
         cmdl = strtok_r(NULL, "&|;", &cmdsave);
-        cout << cmdl << endl;
-        tokand = strtok_r(NULL, "&", &svand);
-        tokor = strtok_r(NULL, "|", &svor);
-        tokcln = strtok_r(NULL, ";", &svcln);
-        if(tokand == NULL || tokor == NULL || tokcln == NULL)
-            return;
-        size_t lenand = strlen(tokand);
-        size_t lenor = strlen(tokor);
-        size_t lencln = strlen(tokcln);
-        if(lenand > lenor && lenand > lencln){
-            failstp=true;
-            boolcln = false;
-        }
-        else if(lenor > lenand && lenor > lencln){
-            failstp=false;
-            boolcln = false;
-        }
-        else{
-            boolcln = true;
-        }
     }
 }
 
