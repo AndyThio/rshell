@@ -41,6 +41,7 @@ void execRun(){
     char* cmdsave, *svand, *svor, *svcln;
     char* tokand, *tokor, *tokcln;
     bool failstp = false;
+    bool boolcln = false;
 
     if(gethostname(hnam, hnamLen) == -1){
         perror("gethostname failed");
@@ -53,9 +54,25 @@ void execRun(){
     strcpy(cstr, uin.c_str());
 
     char* cmdl = strtok_r(cstr, ";&|", &cmdsave);
-    tokand = strtok_r(cstr, ";&|", &svand);
-    tokor = strtok_r(cstr, ";&|", &svor);
-    tokcln = strtok_r(cstr, ";&|", &svcln);
+    tokand = strtok(cstr, "&");
+    tokor = strtok(cstr, "|");
+    tokcln = strtok(cstr, ";");
+cout << tokand << endl << tokor << endl << tokcln << endl;
+    size_t lenand = strlen(tokand);
+    size_t lenor = strlen(tokor);
+    size_t lencln = strlen(tokcln);
+cout << lenand << endl << lenor << endl << lencln << endl;
+    if(lenand > lenor && lenand > lencln){
+        failstp=true;
+        boolcln = false;
+    }
+    else if(lenor > lenand && lenor > lencln){
+        failstp=false;
+        boolcln = false;
+    }
+    else{
+        boolcln = true;
+    }
 
     while( cmdl != NULL){
         char* cmd = strtok(cmdl, " ");
@@ -101,11 +118,15 @@ void execRun(){
                 cmdpass = false;
             }
         }
-        if (!cmdpass && failstp || cmdpass && !failstp)
+cout << "cmdpass: " << cmdpass << endl << "failstp: " << failstp << endl;
+        if (!cmdpass && failstp || cmdpass && !failstp && boolcln)
             return;
         strcpy(svand,cmdsave);
         strcpy(svor,cmdsave);
         strcpy(svcln,cmdsave);
+cout << " WE ARE DOING CMDL" << endl;
+        cmdl = strtok_r(NULL, "&|;", &cmdsave);
+        cout << cmdl << endl;
         tokand = strtok_r(NULL, "&", &svand);
         tokor = strtok_r(NULL, "|", &svor);
         tokcln = strtok_r(NULL, ";", &svcln);
@@ -115,21 +136,15 @@ void execRun(){
         size_t lenor = strlen(tokor);
         size_t lencln = strlen(tokcln);
         if(lenand > lenor && lenand > lencln){
-            strcpy(cmdsave,svand);
-            strcpy(cmd,tokand);
             failstp=true;
+            boolcln = false;
         }
         else if(lenor > lenand && lenor > lencln){
-            strcpy(cmdsave,svor);
-            strcpy(cmdl,tokor);
             failstp=false;
+            boolcln = false;
         }
         else{
-            cout << cmdl << endl;
-            strcpy(cmdsave,svcln);
-            strcpy(cmdl,tokcln);
-cout << endl << cmdl << endl << endl;
-            failstp = false;
+            boolcln = true;
         }
     }
 }
