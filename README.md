@@ -1,25 +1,19 @@
 # rshell
 
 ## Program Overview
-This program was written to create a simple shell that could handle simple `execvp` commands and work similar to `bash`.
-    Features include:
-    * `execvp` commands
-    * Connectors such as:
-        * `&&`
-        * `||`
-        * `;`
+This program was written to create a simple shell that could handle simple `execvp` commands and work similar to `bash`. Features include `execvp` commands and Connectors such as `&&`, `||`, and `;`.
 
 ## How to Use
-    1. The program will prompt you with `username@machine$` and wait for your input.
-        * `username` and `machine` will differ depending on account and machine you are using. E.g. if I was on my computer it would show up as `andy@SlowKing$`.
-    2. Input an execvp command (e.g. `ls`, `pwd`, or `false`)
-    3. Include any wanted flags (e.g. `-a`, `-l`, or `-r`)
-    4. Press enter and rshell will run your command and prompt you for another command.
-        * rshell will not execute bad commands and instead print out an error message.
+1. The program will prompt you with `username@machine$` and wait for your input.
+    - `username` and `machine` will differ depending on account and machine you are using. E.g. if I was on my computer it would show up as `andy@SlowKing$`.
+2. Input an execvp command (e.g. `ls`, `pwd`, or `false`)
+3. Include any wanted flags (e.g. `-a`, `-l`, or `-r`)
+4. Press enter and rshell will run your command and prompt you for another command.
+    - rshell will not execute bad commands and instead print out an error message.
 5. When finished, type `exit` into the prompt to close it.
 
 ## Prerequisites
-*g++ version 4.8.2
+* g++ version 4.8.2
 
 ## Installation Guide
 1. Clone the git repository with
