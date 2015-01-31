@@ -1,10 +1,12 @@
 #variables
 VPATH = src
 CFLAGS = -std=c++11 -Wall -Werror -ansi -pedantic
-FILES = $(addprefix src/, rshell.cpp)
+FILER = $(addprefix src/, rshell.cpp)
+FILELS = $(addprefix src/, ls.cpp)
 #target
-bin/rshell: rshell.cpp | bin
-	g++ $(CFLAGS) $(FILES) -o $@
+bin/rshell ls : $(FILER) | bin
+	g++ $(CFLAGS) $(FILER) -o $@
+	g++ $(CFLAGS) $(FILELS) -o bin/ls
 
 bin:
 	mkdir bin
