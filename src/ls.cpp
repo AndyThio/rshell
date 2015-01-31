@@ -3,6 +3,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
 
 #include <iostream>
 #include <string>
@@ -13,7 +15,6 @@ using namespace std;
 #define INITPF(x) x.second = true;
 #define IFSTREQ(x) x.first.c_str() == argv[i] \
                         && x.second
-#define FLGDET
 
 /*
  * This is a BARE BONES example of how to use opendir/readdir/closedir.
@@ -37,9 +38,9 @@ int main(int argc, char** argv)
     da.first = "-a";
     dl.first = "-l";
     dR.first = "-R";
-    bool filret = true;
-    char* filnam[256];
+    char filnam[512][256];
     int fnsz = 0;
+    string curdir = ".";
 
     int flg = 0;
     for(int i = 1; i < argc; i++){
@@ -57,18 +58,33 @@ int main(int argc, char** argv)
         }
         else {
             strcpy(filnam[fnsz], argv[i]);
+            fnsz++;
         }
     }
-
-    string chartemp = ".";
-    char *dirName = new char[chartemp.size()];
-    strcpy(dirName, chartemp.c_str());
-    DIR *dirp = opendir(dirName);
-    dirent *direntp;
-    while ((direntp = readdir(dirp))){
-        if(direntp->d_name[0] != '.')
-        cout << direntp->d_name << endl;  // use stat here to find attributes of file
+    if(fnsz == 0){
+        fnsz++;
+        strcpy(filnam[0],curdir.c_str());
     }
-    closedir(dirp);
+
+    for(int j = 0; j < fnsz; j++){
+        char *dirName = filnam[j];
+        DIR *dirp = opendir(dirName);
+        if(dirp == NULL){
+            perror("opendir failed");
+            exit(1);
+        }
+
+        dirent *direntp;
+        if(flg == 0){
+            while ((direntp = readdir(dirp))){
+                if(direntp->d_name[0] != '.')
+                cout << direntp->d_name << endl;  // use stat here to find attributes of file
+            }
+        }
+        if(closedir(dirp) == -1){
+            perror("closedir failed");
+            exit(1);
+        }
+    }
 }
 
