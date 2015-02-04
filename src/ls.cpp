@@ -51,6 +51,8 @@ void fpermis(const struct stat* buf){
     cout << ((buf->st_mode & S_IROTH)?"w":"-");
     cout << ((buf->st_mode & S_IROTH)?"x":"-");
     cout << " ";
+//inode
+    cout << setw(5) << right << buf->st_nlink << " ";
 }
 
 void filesz(const struct stat* buf);
@@ -61,7 +63,7 @@ void fdate(const struct stat* buf){
         perror("ctime failed");
         exit(1);
     }
-    for(int i = 0; ftime[i] != '\0' ; i++){
+    for(int i = 0; ftime[i] != '\n' ; i++){
         cout << ftime[i];
     }
     cout << " ";
@@ -90,10 +92,10 @@ char *pathctor(const dirent* dirp, const char* currf){
     return ret;
 }
 
-void lsl(const char* dirp){
+void lsl(const dirent* dirp){
     struct stat buf;
 
-    if(stat(dirp, &buf)){
+    if(stat(dirp->d_name, &buf)){
         perror("stat failed");
         exit(1);
     }
@@ -172,7 +174,7 @@ int main(int argc, char** argv)
 
         else if (flg == 2){
             while((direntp = readdir(dirp))){
-                lsl(pathctor(direntp,filnam[j]));
+                lsl(direntp);
             }
         }
 

@@ -37,4 +37,4 @@ This program was written to create a simple shell that could handle simple `exec
     * This is different from bash which returns a syntax error.
 * A single `&` or `|` will be treated the same as `&&` or `||` respectively.
 * A known bug is that when scripting, rshell will not be able to get your username. It will instead throw an error and display the default `unknown`.
-
+* The number of hardlinks suported by `ls -l` can have no more than 5 digits.
