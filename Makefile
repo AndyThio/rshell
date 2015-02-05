@@ -1,6 +1,6 @@
 #variables
 VPATH = src
-CFLAGS = -std=c++11 -g -Wall -Werror -ansi -pedantic
+CFLAGS = -g -Wall -Werror -ansi -pedantic --std=c++11
 FILER = $(addprefix src/, rshell.cpp)
 FILELS = $(addprefix src/, ls.cpp)
 #target
