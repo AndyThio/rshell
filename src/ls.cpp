@@ -32,7 +32,7 @@ void printl(const dirent* dprt, const int maxflen){
 }
 
 void printr(const dirent* dprt, const int maxflen){
-    cout << setw(maxflen + 2) << left << dprt->d_name << endl;
+    cout << left << dprt->d_name << endl;
 }
 
 void printr(const char* dprt){
@@ -182,11 +182,45 @@ int main(int argc, char** argv)
             if(maxflen < tempfnam.size())
                 maxflen = tempfnam.size();
         }
-        sort(fnam.begin(), fnam.end());
+        sort(fnam.begin(), fnam.end(), locale("en_US.UTF-8"));
 
         if(flg == 0){
+            bool left = true;
+            for(auto &e: fnam){
+                if(left){
+                    if(e.c_str()[0] != '.'){
+                        auto fsearch = filist.find(e);
+                        printl(fsearch->second, maxflen);
+                        left = false;
+                    }
+                }
+                else if(!left){
+                    if(e.c_str()[0] != '.'){
+                        auto fsrch = filist.find(e);
+                        printr(fsrch->second, maxflen);
+                        left = true;
+                    }
+                }
+            }
+            if(!left)
+                cout << endl;
         }
         else if(flg == 1){
+            bool left = true;
+            for(auto &e: fnam){
+                if(left){
+                    auto fsearch = filist.find(e);
+                    printl(fsearch->second, maxflen);
+                    left = false;
+                }
+                else if(!left){
+                    auto fsrch = filist.find(e);
+                    printr(fsrch->second, maxflen);
+                    left = true;
+                }
+            }
+            if(!left)
+                cout << endl;
         }
 
         else if (flg == 2){
