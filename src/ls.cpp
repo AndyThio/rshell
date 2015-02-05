@@ -12,6 +12,9 @@
 #include <string>
 #include <utility>
 #include <iomanip>
+#include <algorithm>
+#include <vector>
+#include <unordered_map>
 
 using namespace std;
 
@@ -24,12 +27,12 @@ using namespace std;
  * Notice that there is no error checking on these functions.
  * You MUST add error checking yourself.
  */
-void printl(const dirent* dprt){
-    cout << setw(30) << left << dprt->d_name;
+void printl(const dirent* dprt, const int maxflen){
+    cout << setw(maxflen + 2) << left << dprt->d_name;
 }
 
-void printr(const dirent* dprt){
-    cout << setw(30) << left << dprt->d_name << endl;
+void printr(const dirent* dprt, const int maxflen){
+    cout << setw(maxflen + 2) << left << dprt->d_name << endl;
 }
 
 void printr(const char* dprt){
@@ -69,7 +72,7 @@ void fdate(const struct stat* buf){
     cout << " ";
 }
 
-char *pathctor(const dirent* dirp, const char* currf){
+string pathctor(const dirent* dirp, const char* currf){
     int slen = strlen(currf);
     int slen2 = strlen(dirp->d_name);
     char dirpc[512];
@@ -88,14 +91,14 @@ char *pathctor(const dirent* dirp, const char* currf){
         }
         dirpc[i] = '\0';
     }
-    char* ret = dirpc;
+    string ret = dirpc;
     return ret;
 }
 
-void lsl(const dirent* dirp){
+void lsl(const char* dirp){
     struct stat buf;
 
-    if(stat(dirp->d_name, &buf)){
+    if(stat(dirp, &buf)){
         perror("stat failed");
         exit(1);
     }
@@ -117,6 +120,7 @@ int main(int argc, char** argv)
  * 7) -l -R -a
  */
     pair<string,bool> da, dl, dR;
+    unordered_map<string, dirent*> filist;
     INITPF(da);
     INITPF(dl);
     INITPF(dR);
@@ -161,20 +165,34 @@ int main(int argc, char** argv)
 
 //printing out according to flags
         dirent *direntp;
+        vector<string> fnam;
+        direntp = readdir(dirp);
+        if(!direntp){
+            perror("readdir failed");
+            exit(1);
+        }
+        string tempfnam = direntp->d_name;
+        filist.emplace(make_pair(tempfnam, direntp));
+        fnam.push_back(tempfnam);
+        unsigned maxflen = tempfnam.size();
+        while ((direntp = readdir(dirp))){
+            tempfnam = direntp->d_name;
+            filist.emplace(make_pair(tempfnam, direntp));
+            fnam.push_back(tempfnam);
+            if(maxflen < tempfnam.size())
+                maxflen = tempfnam.size();
+        }
+        sort(fnam.begin(), fnam.end());
+
         if(flg == 0){
-            while ((direntp = readdir(dirp))){
-                if(direntp->d_name[0] != '.')
-                cout << direntp->d_name << endl;
-            }
         }
         else if(flg == 1){
-            while ((direntp = readdir(dirp)))
-                cout << direntp->d_name << endl;
         }
 
         else if (flg == 2){
             while((direntp = readdir(dirp))){
-                lsl(direntp);
+                string tempfc = pathctor(direntp, filnam[j]);
+                lsl(tempfc.c_str());
             }
         }
 
