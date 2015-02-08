@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <grp.h>
+#include <pwd.h>
 
 #include <iostream>
 #include <string>
@@ -32,7 +34,7 @@ void printl(const dirent* dprt, const int maxflen){
 }
 
 void printr(const dirent* dprt, const int maxflen){
-    cout << left << dprt->d_name << endl;
+    cout << dprt->d_name << endl;
 }
 
 void printr(const char* dprt){
@@ -58,26 +60,45 @@ void fpermis(const struct stat* buf){
     cout << setw(5) << right << buf->st_nlink << " ";
 }
 
-void filesz(const struct stat* buf);
+void filesz(const struct stat* buf){
+        cout << setw(6) << right  << buf->st_size << " ";
+    }
+
+#define MONTM(x,y) if(ftime->tm_mon == x) \
+                    cout << y << " ";
 
 void fdate(const struct stat* buf){
-    char* ftime = ctime((time_t*)&buf->st_mtime);
+    struct tm* ftime = localtime((time_t*)&buf->st_mtime);
     if( ftime == NULL){
-        perror("ctime failed");
+        perror("localtime failed");
         exit(1);
     }
-    for(int i = 0; ftime[i] != '\n' ; i++){
-        cout << ftime[i];
-    }
-    cout << " ";
+    if(ftime->tm_mon == 0)
+        cout << "Jan" << " ";
+    MONTM(1,"Feb");
+    MONTM(2,"Mar");
+    MONTM(3,"Apr");
+    MONTM(4,"May");
+    MONTM(5,"Jun");
+    MONTM(6,"Jul");
+    MONTM(7,"Aug");
+    MONTM(8,"Sep");
+    MONTM(9,"Oct");
+    MONTM(10,"Nov");
+    MONTM(11,"Dec");
+
+    cout <<setw(2) << right << ftime->tm_mday << " ";
+    cout << setw(2) << right << setfill('0') << ftime->tm_hour << ":";
+    cout << setw(2) << right << setfill('0') << ftime->tm_min << " ";
+    cout << setfill(' ');
 }
 
-string pathctor(const dirent* dirp, const char* currf){
+string pathctor(const char* dirp, const char* currf){
     int slen = strlen(currf);
-    int slen2 = strlen(dirp->d_name);
+    int slen2 = strlen(dirp);
     char dirpc[512];
     if(currf[0] == '.' && currf[1] == '\0'){
-        strcpy(dirpc, dirp->d_name);
+        strcpy(dirpc, dirp);
     }
     else{
         int i;
@@ -85,7 +106,7 @@ string pathctor(const dirent* dirp, const char* currf){
             if(i < slen)
                 dirpc[i] = currf[i];
             else if(i > slen)
-                dirpc[i] = dirp->d_name[i - slen-1];
+                dirpc[i] = dirp[i - slen-1];
             else
                 dirpc[i] = '/';
         }
@@ -95,21 +116,267 @@ string pathctor(const dirent* dirp, const char* currf){
     return ret;
 }
 
-void lsl(const char* dirp){
+void fusergrp(const struct stat* buf){
+    struct passwd *pw = getpwuid(buf->st_uid);
+    if(pw)
+        cout << setw(12) << pw->pw_name << " ";
+    else{
+        perror("getpwuid failed");
+        exit(1);
+    }
+    struct group* gpw = getgrgid(buf->st_gid);
+    if(gpw == NULL){
+        perror("getgrgid failed");
+        exit(1);
+    }
+    cout<< setw(8) << gpw->gr_name << " ";
+}
+
+void lsl(const char* dirp, const char* fpath){
     struct stat buf;
 
-    if(stat(dirp, &buf)){
+    if(stat(fpath, &buf)){
         perror("stat failed");
         exit(1);
     }
     fpermis(&buf);
-//    fusergrp(&buf);
-    //filesz(&buf);
+    fusergrp(&buf);
+    filesz(&buf);
     fdate(&buf);
     printr(dirp);
 }
 
+void lsR(const dirent* drtp, string pathn){
+    string prevfil = "..";
+    if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
+        DIR *dirp = opendir(pathn.c_str());
+        if(dirp == NULL){
+            perror("opendir failed");
+            exit(1);
+        }
+        cout << pathn << ":" << endl;
+        unordered_map<string, dirent*> filist;
+        dirent *direntp;
+        vector<string> fnam;
+        direntp = readdir(dirp);
+        if(!direntp){
+            perror("readdir failed");
+            exit(1);
+        }
+        string tempfnam = direntp->d_name;
+        filist.emplace(make_pair(tempfnam, direntp));
+        fnam.push_back(tempfnam);
+        unsigned maxflen = tempfnam.size();
+        while ((direntp = readdir(dirp))){
+            tempfnam = direntp->d_name;
+            filist.emplace(make_pair(tempfnam, direntp));
+            fnam.push_back(tempfnam);
+            if(maxflen < tempfnam.size())
+                maxflen = tempfnam.size();
+        }
+        sort(fnam.begin(), fnam.end(), locale("en_US.UTF-8"));
 
+        bool left = true;
+        for(auto &e: fnam){
+            auto fsearch = filist.find(e);
+            if(left){
+                if(e.c_str()[0] != '.'){
+                    printl(fsearch->second, maxflen);
+                    left = false;
+                }
+            }
+            else if(!left){
+                if(e.c_str()[0] != '.'){
+                    printr(fsearch->second, maxflen);
+                    left = true;
+                }
+            }
+        }
+        if(!left)
+            cout << endl;
+        cout << endl;
+        if(pathn.find("/.") != pathn.size()-2){
+            for(auto &e: fnam){
+                if(e.c_str()[0] != '.'){
+                    auto fsrch = filist.find(e);
+                    lsR(fsrch->second, pathctor(fsrch->second->d_name, pathn.c_str()));
+                }
+            }
+        }
+        if(closedir(dirp) == -1){
+            perror("closedir failed");
+            exit(1);
+        }
+    }
+}
+
+void lsRa(const dirent* drtp, string pathn){
+    string prevfil = "..";
+    if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
+        DIR *dirp = opendir(pathn.c_str());
+        if(dirp == NULL){
+            perror("opendir failed");
+            exit(1);
+        }
+        cout << pathn << ":" << endl;
+        unordered_map<string, dirent*> filist;
+        dirent *direntp;
+        vector<string> fnam;
+        direntp = readdir(dirp);
+        if(!direntp){
+            perror("readdir failed");
+            exit(1);
+        }
+        string tempfnam = direntp->d_name;
+        filist.emplace(make_pair(tempfnam, direntp));
+        fnam.push_back(tempfnam);
+        unsigned maxflen = tempfnam.size();
+        while ((direntp = readdir(dirp))){
+            tempfnam = direntp->d_name;
+            filist.emplace(make_pair(tempfnam, direntp));
+            fnam.push_back(tempfnam);
+            if(maxflen < tempfnam.size())
+                maxflen = tempfnam.size();
+        }
+        sort(fnam.begin(), fnam.end(), locale("en_US.UTF-8"));
+
+        vector<string> isdirp;
+
+        bool left = true;
+        for(auto &e: fnam){
+            auto fsearch = filist.find(e);
+            if(left){
+                    printl(fsearch->second, maxflen);
+                    left = false;
+            }
+            else if(!left){
+                    printr(fsearch->second, maxflen);
+                    left = true;
+            }
+        }
+        if(!left)
+            cout << endl;
+        cout << endl;
+        if(pathn.find("/.") != pathn.size()-2){
+            for(auto &e: fnam){
+                if(strcmp(e.c_str(), ".") != 0 && strcmp(e.c_str(), "..")){
+                    auto fsrch = filist.find(e);
+                    lsRa(fsrch->second, pathctor(fsrch->second->d_name, pathn.c_str()));
+                }
+            }
+        }
+        if(closedir(dirp) == -1){
+            perror("closedir failed");
+            exit(1);
+        }
+    }
+}
+
+void lsRl(const dirent* drtp, string pathn){
+    string prevfil = "..";
+    if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
+        DIR *dirp = opendir(pathn.c_str());
+        if(dirp == NULL){
+            perror("opendir failed");
+            exit(1);
+        }
+        cout << pathn << ":" << endl;
+        unordered_map<string, dirent*> filist;
+        dirent *direntp;
+        vector<string> fnam;
+        direntp = readdir(dirp);
+        if(!direntp){
+            perror("readdir failed");
+            exit(1);
+        }
+        string tempfnam = direntp->d_name;
+        filist.emplace(make_pair(tempfnam, direntp));
+        fnam.push_back(tempfnam);
+        unsigned maxflen = tempfnam.size();
+        while ((direntp = readdir(dirp))){
+            tempfnam = direntp->d_name;
+            filist.emplace(make_pair(tempfnam, direntp));
+            fnam.push_back(tempfnam);
+            if(maxflen < tempfnam.size())
+                maxflen = tempfnam.size();
+        }
+        sort(fnam.begin(), fnam.end(), locale("en_US.UTF-8"));
+
+        for(auto &e: fnam){
+            auto fsearch = filist.find(e);
+            if(e.c_str()[0] != '.'){
+                lsl(fsearch->second->d_name, pathn.c_str());
+            }
+        }
+        cout << endl;
+        if(pathn.find("/.") != pathn.size()-2){
+            for(auto &e: fnam){
+                if(e.c_str()[0] != '.'){
+                    auto fsrch = filist.find(e);
+                    lsRl(fsrch->second, pathctor(fsrch->second->d_name, pathn.c_str()));
+                }
+            }
+        }
+        if(closedir(dirp) == -1){
+            perror("closedir failed");
+            exit(1);
+        }
+    }
+}
+
+void lsRla(const dirent* drtp, string pathn){
+    string prevfil = "..";
+    if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
+        DIR *dirp = opendir(pathn.c_str());
+        if(dirp == NULL){
+            perror("opendir failed");
+            exit(1);
+        }
+        cout << pathn << ":" << endl;
+        unordered_map<string, dirent*> filist;
+        dirent *direntp;
+        vector<string> fnam;
+        direntp = readdir(dirp);
+        if(!direntp){
+            perror("readdir failed");
+            exit(1);
+        }
+        string tempfnam = direntp->d_name;
+        filist.emplace(make_pair(tempfnam, direntp));
+        fnam.push_back(tempfnam);
+        unsigned maxflen = tempfnam.size();
+        while ((direntp = readdir(dirp))){
+            tempfnam = direntp->d_name;
+            filist.emplace(make_pair(tempfnam, direntp));
+            fnam.push_back(tempfnam);
+            if(maxflen < tempfnam.size())
+                maxflen = tempfnam.size();
+        }
+        sort(fnam.begin(), fnam.end(), locale("en_US.UTF-8"));
+
+        for(auto &e: fnam){
+            auto fsearch = filist.find(e);
+            lsl(fsearch->second->d_name, pathn.c_str());
+        }
+        cout << endl;
+        if(pathn.find("/.") != pathn.size()-2){
+            for(auto &e: fnam){
+                if(strcmp(e.c_str(), ".") != 0 && strcmp(e.c_str(), "..")){
+                    auto fsrch = filist.find(e);
+                    lsRla(fsrch->second, pathctor(fsrch->second->d_name, pathn.c_str()));
+                }
+            }
+        }
+        if(closedir(dirp) == -1){
+            perror("closedir failed");
+            exit(1);
+        }
+    }
+}
+
+#define DMUIF(x) x.second && (strcmp(x.first.first.c_str(), argv[i]) == 0 \
+                    || strcmp(x.first.second.c_str(),argv[i]) == 0)
+#define DIF(x) strcmp(argv[i], x) == 0
 int main(int argc, char** argv)
 {
 /*
@@ -120,13 +387,25 @@ int main(int argc, char** argv)
  * 7) -l -R -a
  */
     pair<string,bool> da, dl, dR;
+    pair<pair<string,string>,bool> dla, dRa, dRl;
+    bool dRla = true;
     unordered_map<string, dirent*> filist;
     INITPF(da);
     INITPF(dl);
     INITPF(dR);
+    INITPF(dla);
+    INITPF(dRa);
+    INITPF(dRl);
     da.first = "-a";
     dl.first = "-l";
     dR.first = "-R";
+    dla.first.first = "-la";
+    dla.first.second = "-al";
+    dRa.first.first = "-Ra";
+    dRa.first.second = "-aR";
+    dRl.first.first = "-Rl";
+    dRl.first.second = "-lR";
+
     char filnam[512][256];
     int fnsz = 0;
     string curdir = ".";
@@ -143,7 +422,52 @@ int main(int argc, char** argv)
        }
         else if(IFSTREQ(dR)){
             flg += 4;
-            dl.second = false;
+            dR.second = false;
+        }
+        else if(DMUIF(dla)){
+            if(dl.second){
+                flg += 2;
+                dl.second =false;
+            }
+            if(da.second){
+                flg += 1;
+                da.second = false;
+            }
+        }
+        else if(DMUIF(dRa)){
+            if(dR.second){
+                flg += 4;
+                dR.second =false;
+            }
+            if(da.second){
+                flg += 1;
+                da.second = false;
+            }
+        }
+        else if(DMUIF(dRl)){
+            if(dl.second){
+                flg += 2;
+                dl.second =false;
+            }
+            if(dR.second){
+                flg += 4;
+                dR.second = false;
+            }
+        }
+        else if(dRla && (DIF("-lRa") || DIF("-laR") || DIF("-aRl")
+            || DIF("-alR") || DIF("-Ral") || DIF("-Rla"))){
+            if(dl.second){
+                flg += 2;
+                dl.second = false;
+            }
+            if(da.second){
+                flg += 1;
+                da.second = false;
+            }
+            if(dR.second){
+                flg += 4;
+                dR.second = false;
+            }
         }
         else {
             strcpy(filnam[fnsz], argv[i]);
@@ -156,6 +480,8 @@ int main(int argc, char** argv)
     }
 
     for(int j = 0; j < fnsz; j++){
+        if(fnsz > 1)
+            cout << filnam[j] << ":" << endl;
         char *dirName = filnam[j];
         DIR *dirp = opendir(dirName);
         if(dirp == NULL){
@@ -224,19 +550,68 @@ int main(int argc, char** argv)
         }
 
         else if (flg == 2){
-            while((direntp = readdir(dirp))){
-                string tempfc = pathctor(direntp, filnam[j]);
-                lsl(tempfc.c_str());
+            for(auto &e : fnam){
+                if(e.c_str()[0] != '.'){
+                    string tempath = pathctor(e.c_str(), filnam[j]);
+                    lsl(e.c_str(), tempath.c_str());
+                }
             }
         }
 
+        else if(flg == 3){
+            for(auto &e : fnam){
+                string tempath = pathctor(e.c_str(), filnam[j]);
+                lsl(e.c_str(), tempath.c_str());
+            }
+        }
 
+        else if(flg == 4){
+            for(auto &e : fnam){
+                if(e.c_str()[0] != '.' || 0 == strcmp(e.c_str(), ".")){
+                    auto filsrch = filist.find(e);
+                    lsR(filsrch->second, pathctor(e.c_str(),filnam[j]));
+                }
+            }
+        }
 
+        else if(flg == 5){
+            for(auto &e : fnam){
+                if(strcmp(e.c_str(), "..") != 0){
+                    auto filsrch = filist.find(e);
+                    lsRa(filsrch->second, pathctor(e.c_str(),filnam[j]));
+                }
+            }
+        }
+
+        else if(flg == 6){
+            for(auto &e : fnam){
+                if(e.c_str()[0] != '.' || 0 == strcmp(e.c_str(), ".")){
+                    auto filsrch = filist.find(e);
+                    lsRl(filsrch->second, pathctor(e.c_str(),filnam[j]));
+                }
+            }
+        }
+
+        else if(flg == 7){
+            for(auto &e : fnam){
+                if(strcmp(e.c_str(), "..") != 0){
+                    auto filsrch = filist.find(e);
+                    lsRla(filsrch->second, pathctor(e.c_str(),filnam[j]));
+                }
+            }
+        }
+
+        else{
+            perror("Flag miscount");
+            exit(1);
+        }
 //closing opened directory
         if(closedir(dirp) == -1){
             perror("closedir failed");
             exit(1);
         }
+        if(fnsz > 1)
+            cout << endl;
     }
 }
 
