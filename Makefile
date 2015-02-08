@@ -4,9 +4,11 @@ CFLAGS = -g -Wall -Werror -ansi -pedantic --std=c++11
 FILER = $(addprefix src/, rshell.cpp)
 FILELS = $(addprefix src/, ls.cpp)
 #target
-bin/rshell ls : $(FILER) | bin
+bin/rshell: bin/ls | bin
 	g++ $(CFLAGS) $(FILER) -o $@
-	g++ $(CFLAGS) $(FILELS) -o bin/ls
+
+bin/ls: $(FILELS) | bin
+	g++ $(CFLAGS) $(FILELS) -o $@
 
 bin:
 	mkdir bin
