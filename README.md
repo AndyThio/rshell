@@ -47,10 +47,14 @@ This program was written to create a simple shell that could handle simple `exec
 * A known bug is that when scripting, rshell will not be able to get your username. It will instead throw an error and display the default `unknown`.
 
 ## Bugs/Known Issues/Limitations for `ls`
-* The number of hardlinks suported by `ls -l` can have no more than 5 digits.
 * Once a bad file is entered, ls will quit.
 * Files will always be printed out in two columns.
     *Unless -l is used, then files are printed out in lines with static column sizes.
+* `-l` has limitations on sizes that it can print out.
+    * hardlinks cannot exceed 5 digits
+    * Usernames cannot exceed 12 characters
+    * Groupnames cannot exceed 8 characters
+    * File size cannot exceed 12 digits
 * `bin/ls` can not take more than 512 arguements.
 * When compiling the Makefile, it will always recompile both `rshell` and `ls.cpp` to make `ls`.
 * A Known bug is `make` will not work when scripting.
