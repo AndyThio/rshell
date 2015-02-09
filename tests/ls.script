@@ -1,0 +1,318 @@
+Script started on Sun 08 Feb 2015 06:54:20 PM PST
+~
+athio001@hammer $ cd rshell
+~/rshell
+athio001@hammer $ bin/ls -l[K[K-l[K[K[K[K[K[K[K[K[Kmake[K[K[K[Kbin/ls [K [K[K[K[K[K[K[K# tes[K[K[K[Ktesting my [K[K[Kbasic ls
+~/rshell
+athio001@hammer $ bin/ls 
+[34mbin         [39mLICENSE
+Makefile    README.md
+[34msrc         [39m[34mtests[39m
+typescript  
+~/rshell
+athio001@hammer $ #testing ls with flags
+~/rshell
+athio001@hammer $ ls -a
+[0m[01;34m.[0m/  [01;34m..[0m/  [01;34mbin[0m/  [01;34m.git[0m/  LICENSE  Makefile  README.md  [01;34msrc[0m/  [01;34mtests[0m/  typescript
+[m~/rshell
+athio001@hammer $ ls [K[K[Kbin/j[Kls -a
+[34;100m.           [39;49m[34;100m..[39;49m
+[34mbin         [39m[34;100m.git[39;49m
+LICENSE     Makefile
+README.md   [34msrc[39m
+[34mtests       [39mtypescript
+~/rshell
+athio001@hammer $ bin[K[K[Kbin/ls -a[Kr [K[KR -l[K[K[K[K[K[K[K[Kls -a -l
+drwx------     6     athio001   csmajs   4096 Feb  8 18:50 [34;100m.[39;49m
+drwx------    48     athio001   csmajs   8192 Feb  8 18:49 [34;100m..[39;49m
+drwx------     2     athio001   csmajs   4096 Feb  8 18:48 [34mbin[39m
+drwx------     8     athio001   csmajs   4096 Feb  8 18:50 [34;100m.git[39;49m
+-rw-------     1     athio001   csmajs  18027 Jan 23 11:24 LICENSE
+-rw-------     1     athio001   csmajs    306 Feb  8 07:17 Makefile
+-rw-------     1     athio001   csmajs   1910 Feb  4 03:08 README.md
+drwx------     2     athio001   csmajs   4096 Feb  8 18:49 [34msrc[39m
+drwx------     2     athio001   csmajs   4096 Feb  8 07:21 [34mtests[39m
+-rw-------     1     athio001   csmajs      0 Feb  8 18:50 typescript
+~/rshell
+athio001@hammer $ # [Ktesting ls with flags in[K[K[K[K[K[K[K[Ka file inw[Kbe[K[K[K[K[K[K[K[K[K[K[K[K[Kh flags that are together
+~/rshell
+athio001@hammer $ bin/ls -a [Kl bin/l[K[K[K[K[K[K[K[KRl ../CS1[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Kbin/ls -a[KlR cs[K[K1--[K[K[Kcs[K[K[K ../CS100
+../CS100/.:
+drwx------     2     athio001   csmajs   4096 Jan 28 23:17 [34mlab2[39m
+drwx------     3     athio001   csmajs   4096 Feb  8 05:18 [34mlab3[39m
+drwx------     2     athio001   csmajs   4096 Feb  2 14:06 [34mlab4[39m
+
+../CS100/lab2:
+-rwx------     1     athio001   csmajs  22322 Jan 28 22:55 [92ma.out[39m
+-rwx------     1     athio001   csmajs   8421 Jan 28 23:10 [92mforkbomb[39m
+-rw-------     1     athio001   csmajs    696 Jan 28 22:55 lab2.cpp
+-rw-------     1     athio001   csmajs    157 Jan 28 23:10 wabbits.cpp
+
+../CS100/lab3:
+-rw-------     1     athio001   csmajs     10 Feb  8 05:18 test.cpp
+drwx------     2     athio001   csmajs   4096 Feb  8 05:19 [34mtestingfile[39m
+
+../CS100/lab3/testingfile:
+-rw-------     1     athio001   csmajs      0 Feb  8 05:19 randtest
+
+../CS100/lab4:
+-rwx------     1     athio001   csmajs   9472 Feb  2 13:39 [92ma.out[39m
+-rw-------     1     athio001   csmajs   2172 Feb  2 14:06 lab4.c
+-rw-------     1     athio001   csmajs   1678 Feb  2 13:43 myCString.h
+
+~/rshell
+athio001@hammer $ bin/[K[K[K[K$[K%[K#testing ls with flags between files[C[C[C[C[C
+~/rshell
+athio001@hammer $ cd[K[Kbin/ls -l src -a[K[K[K[K[K[K[K[K[Ksrc -l test[K[K[K[Kbin
+src:
+-rw-------     1     athio001   csmajs  20477 Feb  8 18:49 ls.cpp
+-rw-------     1     athio001   csmajs   3562 Jan 23 11:24 rshell.cpp
+
+bin:
+-rwx------     1     athio001   csmajs 291460 Feb  8 18:48 [92mls[39m
+-rwx------     1     athio001   csmajs  97297 Feb  8 18:48 [92mrshell[39m
+
+~/rshell
+athio001@hammer $ bin/ls src [K[K[Krc -a bin[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K#testing files between flags
+~/rshell
+athio001@hammer $ bin/ls src -l[K[K[K[K[K[K-l -[K...[K/cs[K[KCS100 -h[KRa
+../CS100/.:
+drwx------     5     athio001   csmajs   4096 Feb  8 05:18 [34;100m.[39;49m
+drwx------    48     athio001   csmajs   8192 Feb  8 18:49 [34;100m..[39;49m
+drwx------     2     athio001   csmajs   4096 Jan 28 23:17 [34mlab2[39m
+drwx------     3     athio001   csmajs   4096 Feb  8 05:18 [34mlab3[39m
+drwx------     2     athio001   csmajs   4096 Feb  2 14:06 [34mlab4[39m
+
+../CS100/lab2:
+drwx------     2     athio001   csmajs   4096 Jan 28 23:17 [34;100m.[39;49m
+drwx------     5     athio001   csmajs   4096 Feb  8 05:18 [34;100m..[39;49m
+-rwx------     1     athio001   csmajs  22322 Jan 28 22:55 [92ma.out[39m
+-rwx------     1     athio001   csmajs   8421 Jan 28 23:10 [92mforkbomb[39m
+-rw-------     1     athio001   csmajs    696 Jan 28 22:55 lab2.cpp
+-rw-------     1     athio001   csmajs    157 Jan 28 23:10 wabbits.cpp
+
+../CS100/lab3:
+drwx------     3     athio001   csmajs   4096 Feb  8 05:18 [34;100m.[39;49m
+drwx------     5     athio001   csmajs   4096 Feb  8 05:18 [34;100m..[39;49m
+-rw-------     1     athio001   csmajs     10 Feb  8 05:18 test.cpp
+drwx------     2     athio001   csmajs   4096 Feb  8 05:19 [34mtestingfile[39m
+
+../CS100/lab3/testingfile:
+drwx------     2     athio001   csmajs   4096 Feb  8 05:19 [34;100m.[39;49m
+drwx------     3     athio001   csmajs   4096 Feb  8 05:18 [34;100m..[39;49m
+-rw-------     1     athio001   csmajs      0 Feb  8 05:19 randtest
+
+../CS100/lab4:
+drwx------     2     athio001   csmajs   4096 Feb  2 14:06 [34;100m.[39;49m
+drwx------     5     athio001   csmajs   4096 Feb  8 05:18 [34;100m..[39;49m
+-rwx------     1     athio001   csmajs   9472 Feb  2 13:39 [92ma.out[39m
+-rw-------     1     athio001   csmajs   2172 Feb  2 14:06 lab4.c
+-rw-------     1     athio001   csmajs   1678 Feb  2 13:43 myCString.h
+
+~/rshell
+athio001@hammer $ #TEst[K[K[Kesting with just file[K[K[K[Kfile input
+~/rshell
+athio001@hammer $ bin/ls .
+[34mbin         [39mLICENSE
+Makefile    README.md
+[34msrc         [39m[34mtests[39m
+typescript  
+~/rshell
+athio001@hammer $ bin/ls ..
+[92ma.out                                     [39mC:\nppdf32Log\debuglog.txt
+[34mCS100                                     [39m[34mCS61[39m
+[34mDesktop                                   [39m[34mDocuments[39m
+[34mDownloads                                 [39m[92mex2[39m
+[92mgeany_run_script.sh                       [39m[34mlab3[39m
+[34mMusic                                     [39m[34mPictures[39m
+[34mPublic                                    [39m[34mrandtest[39m
+[34mrshell                                    [39msizeoftest.cpp
+[34mTemplates                                 [39m[34mVideos[39m
+~/rshell
+athio001@hammer $ bin/ls src [K[K[K[K[K[K[K[K[K[K[K#[Kbin/ls src
+ls.cpp      rshell.cpp
+~/rshell
+athio001@hammer $ #testing multiple files [K
+~/rshell
+athio001@hammer $ bin/ls -r[KR[K[Ktest[K[K[K[K.. /[K../src[K[K[Ksrc [K[K[K[KCS100 ..[K[K. REad[K[K[K[Kbin[K[K[Kbin[K[K[Ksrc
+..:
+[92ma.out                                     [39mC:\nppdf32Log\debuglog.txt
+[34mCS100                                     [39m[34mCS61[39m
+[34mDesktop                                   [39m[34mDocuments[39m
+[34mDownloads                                 [39m[92mex2[39m
+[92mgeany_run_script.sh                       [39m[34mlab3[39m
+[34mMusic                                     [39m[34mPictures[39m
+[34mPublic                                    [39m[34mrandtest[39m
+[34mrshell                                    [39msizeoftest.cpp
+[34mTemplates                                 [39m[34mVideos[39m
+
+../CS100:
+[34mlab2  [39m[34mlab3[39m
+[34mlab4  [39m
+
+.:
+[34mbin         [39mLICENSE
+Makefile    README.md
+[34msrc         [39m[34mtests[39m
+typescript  
+
+src:
+ls.cpp      rshell.cpp
+
+~/rshell
+athio001@hammer $ bin/ls -[K[K[K[K[K[K[K[K#testing multiple files with large [K[K[K[K[K[Kflags
+~/rshell
+athio001@hammer $ #testing multiple files with flags[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[10Pbin/ls .. ../CS100 . src -R[Kla
+..:
+drwx------    48     athio001   csmajs   8192 Feb  8 18:49 [34;100m.[39;49m
+drwx--x--x  1269         root     root 200704 Jan 26 15:41 [34;100m..[39;49m
+drwx------     4     athio001   csmajs   4096 Oct 14 11:46 [34;100m.adobe[39;49m
+-rwx------     1     athio001   csmajs   8126 Jan 27 16:26 [92ma.out[39m
+-rw-------     1     athio001   csmajs   1134 Feb  8 18:54 .bash_history
+-rw-------     1     athio001   csmajs     24 Sep 19 16:48 .bash_logout
+-rw-------     1     athio001   csmajs   1270 Sep 19 16:48 .bashrc
+drwx------     3     athio001   csmajs   4096 Jan  8 10:12 [34;100m.cache[39;49m
+-rw-r--r--     1     athio001   csmajs     48 Jan 28 17:58 C:\nppdf32Log\debuglog.txt
+drwx------     8     athio001   csmajs   4096 Oct 28 12:41 [34;100m.config[39;49m
+drwx------     5     athio001   csmajs   4096 Feb  8 05:18 [34mCS100[39m
+drwx------     2     athio001   csmajs   4096 Feb  2 14:12 [34mCS61[39m
+drwx------     3     athio001   csmajs   4096 Sep 30 11:10 [34;100m.dbus[39;49m
+-rw-------     1     athio001   csmajs     64 Nov 22 08:01 .DCOPserver_well.cs.ucr.edu_localhost_10
+-rw-------     1     athio001   csmajs     64 Nov 22 08:01 .DCOPserver_well.cs.ucr.edu_localhost:10
+-rw-------     1     athio001   csmajs     64 Nov 15 20:18 .DCOPserver_well.cs.ucr.edu_localhost_20
+-rw-------     1     athio001   csmajs     64 Nov 15 20:18 .DCOPserver_well.cs.ucr.edu_localhost:20
+-rw-------     1     athio001   csmajs     64 Nov  1 17:37 .DCOPserver_well.cs.ucr.edu_localhost_38
+-rw-------     1     athio001   csmajs     64 Nov  1 17:37 .DCOPserver_well.cs.ucr.edu_localhost:38
+-rw-------     1     athio001   csmajs     64 Oct 11 13:15 .DCOPserver_well.cs.ucr.edu_NODISPLAY
+drwx------     2     athio001   csmajs   4096 Jan  8 10:16 [34mDesktop[39m
+-rwx------     1     athio001   csmajs     27 Dec  2 11:07 [92;100m.dmrc[39;49m
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34mDocuments[39m
+drwx------     2     athio001   csmajs   4096 Nov  1 17:58 [34mDownloads[39m
+drwx------     2     athio001   csmajs   4096 Sep 27 11:11 [34;100m.eggcups[39;49m
+-rwx------     1     athio001   csmajs     16 Oct 25 11:59 [92;100m.esd_auth[39;49m
+-rwx------     1     athio001   csmajs   1780 Jan  8 11:49 [92mex2[39m
+-rwx------     1     athio001   csmajs   4096 Oct 25 14:24 [92;100m.execooo5Y9uL4[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 11 16:06 [92;100m.execoooDWH5pg[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 11 16:06 [92;100m.execoooetQwo5[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 25 14:24 [92;100m.execoooh52z48[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 25 14:24 [92;100m.execooohIPxSx[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 25 14:24 [92;100m.execooohp3tdh[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 11 16:07 [92;100m.execooopKYtqZ[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 11 16:06 [92;100m.execoooRxnaKq[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 25 14:24 [92;100m.execoooVNymZE[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 11 16:06 [92;100m.execooow4ekQJ[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 11 16:06 [92;100m.execoooWUmrJO[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 25 14:24 [92;100m.execoooXRtnMW[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 11 16:06 [92;100m.execoooxUsRXf[39;49m
+-rwx------     1     athio001   csmajs   4096 Oct 25 14:24 [92;100m.execoooZmuslE[39;49m
+drwx------     2     athio001   csmajs   8192 Feb 26 10:08 [34;100m.fontconfig[39;49m
+drwx------     4     athio001   csmajs   4096 Nov  1 17:57 [34;100m.gconf[39;49m
+drwx------     2     athio001   csmajs   4096 Nov  1 18:02 [34;100m.gconfd[39;49m
+-rwx------     1     athio001   csmajs    194 Jan  8 11:48 [92mgeany_run_script.sh[39m
+drwx------     7     athio001   csmajs   4096 Jan 29 16:13 [34;100m.git[39;49m
+-rw-------     1     athio001   csmajs     53 Jan 30 23:26 .gitconfig
+drwx------     3     athio001   csmajs   4096 Jan 21 17:23 [34;100m.gitlearn[39;49m
+drwx------     3     athio001   csmajs   4096 Sep 27 11:11 [34;100m.gnome[39;49m
+drwx------     8     athio001   csmajs  16384 May 14 11:43 [34;100m.gnome2[39;49m
+drwx------     2     athio001   csmajs   4096 Sep 27 11:11 [34;100m.gnome2_private[39;49m
+drwx------     3     athio001   csmajs   4096 Oct  7 11:26 [34;100m.gnote[39;49m
+drwx------     2     athio001   csmajs   4096 Jan 30 15:33 [34;100m.gnupg[39;49m
+drwx------     2     athio001   csmajs   4096 Dec  6 14:06 [34;100m.gstreamer-0.10[39;49m
+-rwx------     1     athio001   csmajs    187 Dec  2 11:07 [92;100m.gtk-bookmarks[39;49m
+-rwx------     1     athio001   csmajs     97 Sep 27 11:11 [92;100m.gtkrc-1.2-gnome2[39;49m
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34;100m.gvfs[39;49m
+-rw-------     1     athio001   csmajs   4588 Nov 22 11:30 .ICEauthority
+-rwx------     1     athio001   csmajs    655 Dec  2 11:07 [92;100m.imsettings.log[39;49m
+drwx------    11     athio001   csmajs   4096 Oct  8 23:50 [34;100m.kde[39;49m
+drwx------     3     athio001   csmajs   4096 Feb  8 05:18 [34mlab3[39m
+-rw-------     1     athio001   csmajs     48 Feb  4 02:36 .lesshst
+drwx------     3     athio001   csmajs   4096 Sep 30 11:10 [34;100m.local[39;49m
+drwx------     3     athio001   csmajs   4096 Sep 27 11:37 [34;100m.macromedia[39;49m
+drwxr-xr-x     2     athio001   csmajs   4096 Oct  8 23:51 [34;100m.mcop[39;49m
+drwx------     3     athio001   csmajs   4096 Sep 27 11:11 [34;100m.metacity[39;49m
+drwx------     4     athio001   csmajs   4096 Sep 27 11:12 [34;100m.mozilla[39;49m
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34mMusic[39m
+drwx------     3     athio001   csmajs   4096 May 14 11:43 [34;100m.nautilus[39;49m
+drwx------     3     athio001   csmajs   4096 Sep 30 11:11 [34;100m.nv[39;49m
+drwx------     3     athio001   csmajs   4096 Oct 11 16:06 [34;100m.openoffice.org[39;49m
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34mPictures[39m
+drwx------     3     athio001   csmajs   4096 Jan 21 17:23 [34;100m.pki[39;49m
+-rwx------     1     athio001   csmajs     88 Sep 22 15:02 [92;100m.procmailrc[39;49m
+-rw-------     1     athio001   csmajs    965 Sep 19 16:49 .profile
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34mPublic[39m
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34;100m.pulse[39;49m
+-rwx------     1     athio001   csmajs    256 Sep 30 11:10 [92;100m.pulse-cookie[39;49m
+drwxr-xr-x     2     athio001   csmajs   4096 Nov 22 09:51 [34;100m.qt[39;49m
+drwx------     2     athio001   csmajs   4096 Feb  5 20:20 [34mrandtest[39m
+-rw-------     1     athio001   csmajs   5190 Nov 22 09:28 .recently-used.xbel
+drwx------     3     athio001   csmajs   4096 Sep 27 11:11 [34;100m.redhat[39;49m
+drwx------     6     athio001   csmajs   4096 Feb  8 18:50 [34mrshell[39m
+-rw-------     1     athio001   csmajs    115 Jan 27 16:26 sizeoftest.cpp
+drwx------     2     athio001   csmajs   4096 Jan 28 21:11 [34;100m.ssh[39;49m
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34mTemplates[39m
+drwx------     2     athio001   csmajs   4096 Apr 16 11:29 [34;100m.Trash[39;49m
+drwx------     2     athio001   csmajs   4096 Sep 30 11:10 [34mVideos[39m
+drwx------     3     athio001   csmajs   4096 Feb  7 23:42 [34;100m.vim[39;49m
+-rwx------     1     athio001   csmajs   9113 Feb  8 18:49 [92;100m.viminfo[39;49m
+-rw-------     1     athio001   csmajs   2139 Jan 28 21:05 .vimrc
+-rw-------     1     athio001   csmajs   1475 Feb  8 18:00 .Xauthority
+-rwx------     1     athio001   csmajs 1167210 Nov 25 11:09 [92;100m.xsession-errors.old[39;49m
+
+../CS100:
+drwx------     5     athio001   csmajs   4096 Feb  8 05:18 [34;100m.[39;49m
+drwx------    48     athio001   csmajs   8192 Feb  8 18:49 [34;100m..[39;49m
+drwx------     2     athio001   csmajs   4096 Jan 28 23:17 [34mlab2[39m
+drwx------     3     athio001   csmajs   4096 Feb  8 05:18 [34mlab3[39m
+drwx------     2     athio001   csmajs   4096 Feb  2 14:06 [34mlab4[39m
+
+.:
+drwx------     6     athio001   csmajs   4096 Feb  8 18:50 [34;100m.[39;49m
+drwx------    48     athio001   csmajs   8192 Feb  8 18:49 [34;100m..[39;49m
+drwx------     2     athio001   csmajs   4096 Feb  8 18:48 [34mbin[39m
+drwx------     8     athio001   csmajs   4096 Feb  8 18:50 [34;100m.git[39;49m
+-rw-------     1     athio001   csmajs  18027 Jan 23 11:24 LICENSE
+-rw-------     1     athio001   csmajs    306 Feb  8 07:17 Makefile
+-rw-------     1     athio001   csmajs   1910 Feb  4 03:08 README.md
+drwx------     2     athio001   csmajs   4096 Feb  8 18:49 [34msrc[39m
+drwx------     2     athio001   csmajs   4096 Feb  8 07:21 [34mtests[39m
+-rw-------     1     athio001   csmajs      0 Feb  8 18:50 typescript
+
+src:
+drwx------     2     athio001   csmajs   4096 Feb  8 18:49 [34;100m.[39;49m
+drwx------     6     athio001   csmajs   4096 Feb  8 18:50 [34;100m..[39;49m
+-rw-------     1     athio001   csmajs  20477 Feb  8 18:49 ls.cpp
+-rw-------     1     athio001   csmajs   3562 Jan 23 11:24 rshell.cpp
+
+~/rshell
+athio001@hammer $ #testing if [K[K[K[Kwi[K[K with fl[Kile mashedi[K into flag
+~/rshell
+athio001@hammer $ i[Kbin/ls =[K- [Kl[Klsrcs[Kcode[K[K[K[K[K[K[Ksrc
+opendir failed: No such file or directory
+~/rshell
+athio001@hammer $ bin/ls -lsdfasdf[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K#testing bad flags with good files
+~/rshell
+athio001@hammer $ bin/ls -lpotato src
+-lpotato:
+opendir failed: No such file or directory
+~/rshell
+athio001@hammer $ #testing bad [K[K[K[Kgood file with bad file
+~/rshell
+athio001@hammer $ bin/ls src[K[K[K../[K[K. poatores
+..:
+[92ma.out                                     [39mC:\nppdf32Log\debuglog.txt
+[34mCS100                                     [39m[34mCS61[39m
+[34mDesktop                                   [39m[34mDocuments[39m
+[34mDownloads                                 [39m[92mex2[39m
+[92mgeany_run_script.sh                       [39m[34mlab3[39m
+[34mMusic                                     [39m[34mPictures[39m
+[34mPublic                                    [39m[34mrandtest[39m
+[34mrshell                                    [39msizeoftest.cpp
+[34mTemplates                                 [39m[34mVideos[39m
+
+poatores:
+opendir failed: No such file or directory
+~/rshell
+athio001@hammer $ #test[K[K[K[K[Kexit
+exit
+
+Script done on Sun 08 Feb 2015 07:09:49 PM PST
