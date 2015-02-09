@@ -29,16 +29,52 @@ using namespace std;
  * Notice that there is no error checking on these functions.
  * You MUST add error checking yourself.
  */
-void printl(const dirent* dprt, const int maxflen){
-    cout << setw(maxflen + 2) << left << dprt->d_name;
+
+#define IFHEXEC() (buf->st_mode & S_IXUSR || buf->st_mode & S_IXGRP \
+                    || buf->st_mode & S_IXOTH) && dprt->d_name[0] == '.' \
+                    && dprt->d_type != DT_DIR
+#define IFEXEC() (buf->st_mode & S_IXUSR || buf->st_mode & S_IXGRP \
+                    || buf->st_mode & S_IXOTH) && dprt->d_type != DT_DIR
+void printl(const dirent* dprt, const int maxflen, const struct stat* buf){
+    if(dprt->d_type == DT_DIR && dprt->d_name[0] == '.'){
+        cout << "\033[34;100m" << setw(maxflen + 2) << left<< dprt->d_name
+            << "\033[39;49m";
+    }
+    else if(IFHEXEC()){
+        cout << "\033[92;100m" << setw(maxflen +2) << left << dprt->d_name
+            << "\033[39;49m";
+    }
+    else if(IFEXEC()){
+        cout << "\033[92m" << setw(maxflen + 2) << left << dprt->d_name
+            << "\033[39m";
+    }
+    else if(dprt->d_type == DT_DIR){
+        cout << "\033[34m" << setw(maxflen + 2) << left<< dprt->d_name
+            << "\033[39m";
+    }
+
+    else
+        cout << setw(maxflen + 2) << left << dprt->d_name;
 }
 
-void printr(const dirent* dprt, const int maxflen){
-    cout << dprt->d_name << endl;
-}
-
-void printr(const char* dprt){
-    cout << setw(30) << left << dprt << endl;
+void printr(const dirent* dprt, const struct stat* buf){
+    if(dprt->d_type == DT_DIR && dprt->d_name[0] == '.'){
+        cout << "\033[34;100m" << left << dprt->d_name << "\033[39;49m" << endl;
+    }
+    else if(IFHEXEC()){
+        cout << "\033[92;100m" << left << dprt->d_name
+            << "\033[39;49m" << endl;
+    }
+    else if(IFEXEC()){
+        cout << "\033[92m" <<left << dprt->d_name
+            << "\033[39m" << endl;;
+    }
+    else if(dprt->d_type == DT_DIR){
+        cout << "\033[34m" << left << dprt->d_name
+            << "\033[39m" << endl;
+    }
+    else
+        cout << dprt->d_name << endl;
 }
 
 void fpermis(const struct stat* buf){
@@ -49,12 +85,12 @@ void fpermis(const struct stat* buf){
     cout << ((buf->st_mode & S_IXUSR)?"x":"-");
 
     cout << ((buf->st_mode & S_IRGRP)?"r":"-");
-    cout << ((buf->st_mode & S_IRGRP)?"w":"-");
-    cout << ((buf->st_mode & S_IRGRP)?"x":"-");
+    cout << ((buf->st_mode & S_IWGRP)?"w":"-");
+    cout << ((buf->st_mode & S_IXGRP)?"x":"-");
 
     cout << ((buf->st_mode & S_IROTH)?"r":"-");
-    cout << ((buf->st_mode & S_IROTH)?"w":"-");
-    cout << ((buf->st_mode & S_IROTH)?"x":"-");
+    cout << ((buf->st_mode & S_IWOTH)?"w":"-");
+    cout << ((buf->st_mode & S_IXOTH)?"x":"-");
     cout << " ";
 //inode
     cout << setw(5) << right << buf->st_nlink << " ";
@@ -132,7 +168,7 @@ void fusergrp(const struct stat* buf){
     cout<< setw(8) << gpw->gr_name << " ";
 }
 
-void lsl(const char* dirp, const char* fpath){
+void lsl(const dirent* dirp, const char* fpath){
     struct stat buf;
 
     if(stat(fpath, &buf)){
@@ -143,11 +179,20 @@ void lsl(const char* dirp, const char* fpath){
     fusergrp(&buf);
     filesz(&buf);
     fdate(&buf);
-    printr(dirp);
+    printr(dirp, &buf);
 }
-
+#define CTOR_BUF(x) struct stat buf; \
+                        if(stat(x, &buf)){ \
+                            perror("stat failed"); \
+                            exit(1); \
+                        }
 void lsR(const dirent* drtp, string pathn){
     string prevfil = "..";
+    struct stat buf;
+    if(stat(pathn.c_str(), &buf)){
+        perror("stat failed");
+        exit(1);
+    }
     if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
         DIR *dirp = opendir(pathn.c_str());
         if(dirp == NULL){
@@ -181,13 +226,13 @@ void lsR(const dirent* drtp, string pathn){
             auto fsearch = filist.find(e);
             if(left){
                 if(e.c_str()[0] != '.'){
-                    printl(fsearch->second, maxflen);
+                    printl(fsearch->second, maxflen, &buf);
                     left = false;
                 }
             }
             else if(!left){
                 if(e.c_str()[0] != '.'){
-                    printr(fsearch->second, maxflen);
+                    printr(fsearch->second, &buf);
                     left = true;
                 }
             }
@@ -212,6 +257,7 @@ void lsR(const dirent* drtp, string pathn){
 
 void lsRa(const dirent* drtp, string pathn){
     string prevfil = "..";
+    CTOR_BUF(pathn.c_str());
     if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
         DIR *dirp = opendir(pathn.c_str());
         if(dirp == NULL){
@@ -246,11 +292,11 @@ void lsRa(const dirent* drtp, string pathn){
         for(auto &e: fnam){
             auto fsearch = filist.find(e);
             if(left){
-                    printl(fsearch->second, maxflen);
+                    printl(fsearch->second, maxflen, &buf);
                     left = false;
             }
             else if(!left){
-                    printr(fsearch->second, maxflen);
+                    printr(fsearch->second, &buf);
                     left = true;
             }
         }
@@ -305,7 +351,7 @@ void lsRl(const dirent* drtp, string pathn){
         for(auto &e: fnam){
             auto fsearch = filist.find(e);
             if(e.c_str()[0] != '.'){
-                lsl(fsearch->second->d_name, pathn.c_str());
+                lsl(fsearch->second, pathn.c_str());
             }
         }
         cout << endl;
@@ -356,7 +402,7 @@ void lsRla(const dirent* drtp, string pathn){
 
         for(auto &e: fnam){
             auto fsearch = filist.find(e);
-            lsl(fsearch->second->d_name, pathn.c_str());
+            lsl(fsearch->second, pathn.c_str());
         }
         cout << endl;
         if(pathn.find("/.") != pathn.size()-2){
@@ -515,15 +561,19 @@ int main(int argc, char** argv)
             for(auto &e: fnam){
                 if(left){
                     if(e.c_str()[0] != '.'){
+                        string pout1 = pathctor(e.c_str(), filnam[j]);
+                        CTOR_BUF(pout1.c_str());
                         auto fsearch = filist.find(e);
-                        printl(fsearch->second, maxflen);
+                        printl(fsearch->second, maxflen, &buf);
                         left = false;
                     }
                 }
                 else if(!left){
                     if(e.c_str()[0] != '.'){
+                        string pout2 = pathctor(e.c_str(), filnam[j]);
+                        CTOR_BUF(pout2.c_str());
                         auto fsrch = filist.find(e);
-                        printr(fsrch->second, maxflen);
+                        printr(fsrch->second, &buf);
                         left = true;
                     }
                 }
@@ -535,13 +585,17 @@ int main(int argc, char** argv)
             bool left = true;
             for(auto &e: fnam){
                 if(left){
+                    string pout3 = pathctor(e.c_str(), filnam[j]);
+                    CTOR_BUF(pout3.c_str());
                     auto fsearch = filist.find(e);
-                    printl(fsearch->second, maxflen);
+                    printl(fsearch->second, maxflen, &buf);
                     left = false;
                 }
                 else if(!left){
+                    string pout4 = pathctor(e.c_str(), filnam[j]);
+                    CTOR_BUF(pout4.c_str());
                     auto fsrch = filist.find(e);
-                    printr(fsrch->second, maxflen);
+                    printr(fsrch->second, &buf);
                     left = true;
                 }
             }
@@ -553,15 +607,17 @@ int main(int argc, char** argv)
             for(auto &e : fnam){
                 if(e.c_str()[0] != '.'){
                     string tempath = pathctor(e.c_str(), filnam[j]);
-                    lsl(e.c_str(), tempath.c_str());
+                    auto fsrch = filist.find(e);
+                    lsl(fsrch->second, tempath.c_str());
                 }
             }
         }
 
         else if(flg == 3){
             for(auto &e : fnam){
+                auto fsrch = filist.find(e);
                 string tempath = pathctor(e.c_str(), filnam[j]);
-                lsl(e.c_str(), tempath.c_str());
+                lsl(fsrch->second, tempath.c_str());
             }
         }
 
