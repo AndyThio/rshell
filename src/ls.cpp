@@ -172,7 +172,7 @@ void lsl(const dirent* dirp, const char* fpath){
     struct stat buf;
 
     if(stat(fpath, &buf)){
-        perror("stat failed");
+        perror("stat lsl failed");
         exit(1);
     }
     fpermis(&buf);
@@ -181,18 +181,20 @@ void lsl(const dirent* dirp, const char* fpath){
     fdate(&buf);
     printr(dirp, &buf);
 }
+
 #define CTOR_BUF(x) struct stat buf; \
                         if(stat(x, &buf)){ \
-                            perror("stat failed"); \
+                            perror("stat print failed"); \
+                            exit(1); \
+                        }
+#define CTOR_BUF2(x,y) struct stat buf; \
+                        string temppah = pathctor(x,y); \
+                        if(stat(temppah.c_str(), &buf)){ \
+                            perror("stat print 2 failed"); \
                             exit(1); \
                         }
 void lsR(const dirent* drtp, string pathn){
     string prevfil = "..";
-    struct stat buf;
-    if(stat(pathn.c_str(), &buf)){
-        perror("stat failed");
-        exit(1);
-    }
     if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
         DIR *dirp = opendir(pathn.c_str());
         if(dirp == NULL){
@@ -226,12 +228,14 @@ void lsR(const dirent* drtp, string pathn){
             auto fsearch = filist.find(e);
             if(left){
                 if(e.c_str()[0] != '.'){
+                    CTOR_BUF2(e.c_str(), pathn.c_str());
                     printl(fsearch->second, maxflen, &buf);
                     left = false;
                 }
             }
             else if(!left){
                 if(e.c_str()[0] != '.'){
+                    CTOR_BUF2(e.c_str(), pathn.c_str());
                     printr(fsearch->second, &buf);
                     left = true;
                 }
@@ -257,7 +261,6 @@ void lsR(const dirent* drtp, string pathn){
 
 void lsRa(const dirent* drtp, string pathn){
     string prevfil = "..";
-    CTOR_BUF(pathn.c_str());
     if(drtp->d_type == DT_DIR && strcmp(drtp->d_name,prevfil.c_str()) != 0){
         DIR *dirp = opendir(pathn.c_str());
         if(dirp == NULL){
@@ -286,18 +289,18 @@ void lsRa(const dirent* drtp, string pathn){
         }
         sort(fnam.begin(), fnam.end(), locale("en_US.UTF-8"));
 
-        vector<string> isdirp;
-
         bool left = true;
         for(auto &e: fnam){
             auto fsearch = filist.find(e);
             if(left){
-                    printl(fsearch->second, maxflen, &buf);
-                    left = false;
+                CTOR_BUF2(e.c_str(), pathn.c_str());
+                printl(fsearch->second, maxflen, &buf);
+                left = false;
             }
             else if(!left){
-                    printr(fsearch->second, &buf);
-                    left = true;
+                CTOR_BUF2(e.c_str(), pathn.c_str());
+                printr(fsearch->second, &buf);
+                left = true;
             }
         }
         if(!left)
@@ -351,7 +354,8 @@ void lsRl(const dirent* drtp, string pathn){
         for(auto &e: fnam){
             auto fsearch = filist.find(e);
             if(e.c_str()[0] != '.'){
-                lsl(fsearch->second, pathn.c_str());
+                string temppah = pathctor(e.c_str(), pathn.c_str());
+                lsl(fsearch->second, temppah.c_str());
             }
         }
         cout << endl;
@@ -402,7 +406,8 @@ void lsRla(const dirent* drtp, string pathn){
 
         for(auto &e: fnam){
             auto fsearch = filist.find(e);
-            lsl(fsearch->second, pathn.c_str());
+            string temppah = pathctor(e.c_str(), pathn.c_str());
+            lsl(fsearch->second, temppah.c_str());
         }
         cout << endl;
         if(pathn.find("/.") != pathn.size()-2){
