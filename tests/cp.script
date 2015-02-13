@@ -1,0 +1,128 @@
+Script started on Fri 13 Feb 2015 06:36:38 AM UTC
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ls
+Timer.h  cp.cpp  [0m[01;32mlinux.words[0m*  test.cpp  typescript
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ g++ cp.cpp -o cp
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ cat linux.words | head #showing contents of linux.words
+1080
+10-point
+10th
+11-point
+12-point
+16-point
+18-point
+1st
+2
+20-point
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ cat linux.words | tail #showing contents of linux.words
+Zythia
+zythum
+Zyzomys
+Zyzzogeton
+zyzzyva
+zyzzyvas
+ZZ
+Zz
+zZt
+ZZZ
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linxux.words test1.txt 1 #testing method 1 (using option param)
+Method 1
+Wall Clock: 0.124198
+User Time: 0.092
+System Time: 1
+
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linux.words test1.cpptest1.txt 1 #testing method 1 (check if file exists)
+File exist
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp [K[K[K[K[Kcat test1.txt | head #showing contents of test1.txt
+1080
+10-point
+10th
+11-point
+12-point
+16-point
+18-point
+1st
+2
+20-point
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ cat test1.txt | tail #showing contents of test1.txt
+Zythia
+zythum
+Zyzomys
+Zyzzogeton
+zyzzyva
+zyzzyvas
+ZZ
+Zz
+zZt
+ZZZ
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linux.words test2.txt 2 #testing method 2 (using option param)
+Method 2
+Wall Clock: 32.684
+User Time: 0.672
+System Time: 1
+
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linux.words test2.txt 2 #testing method 2 (check if file exists)
+open output file failed: File exists
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ cat test2.txt | head #showing contents of test2.txt
+1080
+10-point
+10th
+11-point
+12-point
+16-point
+18-point
+1st
+2
+20-point
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ cat test2.txt | tail #showing contents of test2.txt
+Zythia
+zythum
+Zyzomys
+Zyzzogeton
+zyzzyva
+zyzzyvas
+ZZ
+Zz
+zZt
+ZZZ
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linux.words test3.txt 3 #testing method 3 (using option param)
+Method 3
+Wall Clock: 0.017518
+User Time: 0
+System Time: 1
+
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linux.words test3.txt 3 #testing method 3 (check if file exists)
+open output file failed: File exists
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ cat test3.txt | head #showing contents of test3.txt
+1080
+10-point
+10th
+11-point
+12-point
+16-point
+18-point
+1st
+2
+20-point
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ cat test3.txt | tail #showing contents of test3.txt
+Zythia
+zythum
+Zyzomys
+Zyzzogeton
+zyzzyva
+zyzzyvas
+ZZ
+Zz
+zZt
+ZZZ
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linux.words test4.txt  #testing without param (should use Method 3)
+Method 3
+Wall Clock: 0.022054
+User Time: 0
+System Time: 1
+
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ ./cp linux.words test4.txt  #testing without param (check if file exists)
+open output file failed: File exists
+[01;32mslee208@cs_main[00m:[01;34m/home/ubuntu/workspace/CS100/lab5[00m $ exit
+exit
+
+Script done on Fri 13 Feb 2015 06:41:00 AM UTC
