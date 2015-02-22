@@ -8,7 +8,35 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <vector>
+#include <unordered_maps>
 using namespace std;
+
+typedef void (*redircmd) ();
+//comhands
+//exit
+void endprog(){
+    exit(0);
+}
+
+// <
+void inpip(char* filnam){
+    if(int fdo = open(filnam, O_RDONLY) == -1){
+        perror("open file failed");
+        exit(1);
+    }
+    while(
+    if(-1==write(0,
+}
+
+// >
+void outpip(){
+
+}
+
+// >>
+void cerrpip(){
+
+}
 
 void printo(char** p){
     for(int c = 0; p[c] != NULL; c++){
@@ -59,7 +87,7 @@ void execRun(char* uname, char hnam[]){
             j++;
         }
         else if(uin.at(j) == '|' && uin.at(j+1) != '|')
-            symbs.push_back(1);
+            symbs.push_back(3);
         else if(uin.at(j) == ';')
             symbs.push_back(2);
     }
@@ -134,6 +162,7 @@ void execRun(char* uname, char hnam[]){
 }
 
 int main(){
+    unordered_map<string, comhand> txtcmd;
     char* uname;
     char hnam[512];
     size_t hnamLen = 512;
