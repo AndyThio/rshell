@@ -18,25 +18,6 @@ void endprog(){
     exit(0);
 }
 
-// <
-void inpip(char* filnam){
-    if(int fdo = open(filnam, O_RDONLY) == -1){
-        perror("open file failed");
-        exit(1);
-    }
-    while(
-    if(-1==write(0,
-}
-
-// >
-void outpip(){
-
-}
-
-// >>
-void cerrpip(){
-
-}
 
 void printo(char** p){
     for(int c = 0; p[c] != NULL; c++){
