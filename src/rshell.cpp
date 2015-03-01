@@ -6,10 +6,14 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <vector>
-#include <unordered_maps>
+#include <unordered_map>
 using namespace std;
+
+#define SEPS "|&;><"
 
 typedef void (*redircmd) ();
 //comhands
@@ -19,23 +23,81 @@ void endprog(){
 }
 
 // <
-void inpip(char* filnam){
-    if(int fdo = open(filnam, O_RDONLY) == -1){
-        perror("open file failed");
+void inpip(char* innam){
+    int fdi;
+    if (-1==(fdi=open(innam,O_RDONLY))) {
+        perror ("open input failed");
         exit(1);
     }
-    while(
-    if(-1==write(0,
+    char buf[BUFSIZ];
+    int bytesize;
+    while(bytesize = read(fdi,buf, (BUFSIZ))){
+        if(bytesize == -1){
+            perror("read failed");
+            exit(1);
+        }
+        if(-1 == write(0, buf, bytesize)){
+            perror("write to stdin failed");
+            exit(1);
+        }
+    }
+
+    if(close(fdi)){
+        perror("input file failed to close");
+    }
+    return;
 }
 
 // >
-void outpip(){
-
+void outpip(char* innam, int fdnum){
+    int fdo;
+    if ( -1 == (fdo=open(innam, O_WRONLY | O_CREAT | S_IRWXU
+                    | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))) {
+        perror ("open outputfile failed");
+        exit(1);
+    }
+    char buf[BUFSIZ];
+    int bytesize;
+    close(1);
+    while(bytesize = read(fdnum, buf, (BUFSIZ))){
+        if(bytesize == -1){
+            perror("read failed");
+            exit(1);
+        }
+        if(-1 == write(fdo, buf, bytesize)){
+            perror("write failed");
+            exit(1);
+        }
+    }
+    if(close(fdo)){
+        perror("close failed");
+    }
 }
 
 // >>
-void cerrpip(){
-
+void cerrpip(char* innam){
+    int fdo;
+    if ( -1 == (fdo=open(innam, O_WRONLY | O_CREAT | O_APPEND
+                    | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))) {
+        perror ("open outputfile failed");
+        exit(1);
+    }
+    char buf[BUFSIZ];
+    int bytesize;
+    close(2);
+    while(bytesize = read(1, buf, (BUFSIZ))){
+        if(bytesize == -1){
+            perror("read failed");
+            exit(1);
+        }
+        if(-1 == write(fdo, buf, bytesize)){
+            perror("write failed");
+            exit(1);
+        }
+    }
+    if(close(fdo)){
+        perror("close failed");
+    }
 }
 
 void printo(char** p){
@@ -63,6 +125,7 @@ void usernam(string& nam){
     return;
 }
 
+
 void execRun(char* uname, char hnam[]){
     string uin;
     char* cmdsave;
@@ -75,6 +138,14 @@ void execRun(char* uname, char hnam[]){
     strcpy(cstr, uin.c_str());
     vector<int> symbs;
     cstr = strtok(cstr, "#");
+    /* && == & == 0
+     * || == 1
+     * ; == 2
+     * | == 3
+     * < == 4
+     * > == 5
+     * >> == 6
+     */
     for(unsigned j = 0; j < uin.size()-1; j++){
         if(uin.at(j) == '&' && uin.at(j+1) == '&'){
             symbs.push_back(0);
@@ -90,15 +161,21 @@ void execRun(char* uname, char hnam[]){
             symbs.push_back(3);
         else if(uin.at(j) == ';')
             symbs.push_back(2);
+        else if(uin.at(j) == '<' && uin.at(j+1) != '<')
+            symbs.push_back(4);
+        else if(uin.at(j) == '>' && uin.at(j+1) != '>')
+            symbs.push_back(5);
+        else if(uin.at(j) == '>' && uin.at(j+1) == '>')
+            symbs.push_back(6);
     }
     symbs.push_back(2);
 
-    char* cmdl = strtok_r(cstr, ";&|", &cmdsave);
+    char* cmdl = strtok_r(cstr, SEPS, &cmdsave);
     while(symbs.size() != 0 && cmdl != NULL){
         char* cmd = strtok(cmdl, " ");
         if(cmd == NULL){
             symbs.erase(symbs.begin());
-            cmdl = strtok_r(NULL, "&|;", &cmdsave);
+            cmdl = strtok_r(NULL, SEPS, &cmdsave);
         }
         else{
         char* argv[2048];
@@ -115,32 +192,136 @@ void execRun(char* uname, char hnam[]){
             exit(0);
         }
 
-
-        int pid = fork();
-        if(pid == -1){
-            perror("fork failed");
-            exit(1);
-        }
-        else if (pid == 0){
-            if(-1 == execvp(cmd,argv)){
-                perror("execvp failed");
+        if(symbs.at(0) == 4){
+            int pid = fork();
+            if(pid == -1){
+                perror("fork failed");
                 exit(1);
             }
-            exit(0);
-        }
-        else{
-            int wtret;
-            int wtpid = wait(&wtret);
-            if(-1 == wtpid){
-                perror("wait failed");
-                exit(1);
-            }
-
-            if (wtret == 0){
-                cmdpass = true;
+            else if(pid == 0){
             }
             else{
-                cmdpass = false;
+                int wtret;
+                int wtpid = wait(&wtret);
+                if(-1 == wtpid){
+                    perror("wait failed");
+                    exit(1);
+                }
+                if(wtret == 0){
+                    cmdpass = true;
+                }
+                else{
+                    cmdpass = false;
+                }
+            }
+        }
+
+        else if(symbs.at(0) == 5){
+            int fdnum;
+            if( -1 == ( fdnum = dup(1))){
+                perror("dup failed");
+                exit(1);
+            }
+            if(-1==close(1)){
+                perror("close failed");
+                exit(1);
+            }
+            int pid = fork();
+            if(pid == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid == 0){
+                int pid2 = fork();
+                if(pid2 == -1){
+                    perror("fork failed");
+                    exit(1);
+                }
+                else if(pid2 == 0){
+                    if(-1 == execvp(cmd,argv)){
+                        perror("execvp failed");
+                        exit(1);
+                    }
+                    exit(0);
+                }
+                else{
+                    int wtret;
+                    int wtpid = wait(&wtret);
+                    if(-1 == wtpid){
+                        perror("wait failed");
+                        exit(1);
+                    }
+                    outpip(strtok_r(cstr, SEPS, &cmdsave),fdnum);
+                }
+                exit(0);
+            }
+            else{
+                int wtret;
+                int wtpid = wait(&wtret);
+                if(-1 == wtpid){
+                    perror("wait failed");
+                    exit(1);
+                }
+                if(wtret == 0){
+                    cmdpass = true;
+                }
+                else{
+                    cmdpass = false;
+                }
+            }
+        }
+
+        else if(symbs.at(0) == 6){
+            int pid = fork();
+            if(pid == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid == 0){
+            }
+            else{
+                int wtret;
+                int wtpid = wait(&wtret);
+                if(-1 == wtpid){
+                    perror("wait failed");
+                    exit(1);
+                }
+                if(wtret == 0){
+                    cmdpass = true;
+                }
+                else{
+                    cmdpass = false;
+                }
+            }
+        }
+
+        else{
+            int pid = fork();
+            if(pid == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if (pid == 0){
+                if(-1 == execvp(cmd,argv)){
+                    perror("execvp failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            else{
+                int wtret;
+                int wtpid = wait(&wtret);
+                if(-1 == wtpid){
+                    perror("wait failed");
+                    exit(1);
+                }
+
+                if (wtret == 0){
+                    cmdpass = true;
+                }
+                else{
+                    cmdpass = false;
+                }
             }
         }
         if(symbs.size() == 0)
@@ -156,13 +337,12 @@ void execRun(char* uname, char hnam[]){
             }
         }
         symbs.erase(symbs.begin());
-        cmdl = strtok_r(NULL, "&|;", &cmdsave);
+        cmdl = strtok_r(NULL, SEPS, &cmdsave);
         }
     }
 }
 
 int main(){
-    unordered_map<string, comhand> txtcmd;
     char* uname;
     char hnam[512];
     size_t hnamLen = 512;
