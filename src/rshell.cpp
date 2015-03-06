@@ -8,16 +8,52 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <vector>
-#include <unordered_maps>
+#include <unordered_map>
+#include <dirent.h>
 using namespace std;
 
-typedef void (*redircmd) ();
-//comhands
-//exit
-void endprog(){
-    exit(0);
-}
 
+char* execRun(const char* command, bool &isNull){
+    isNull = true;
+    vector<char*> paths;
+
+    char *pathHolder = getenv("PATH");
+    if (pathHolder == NULL){
+        perror("getenv failed");
+        exit(1);
+    }
+
+    char *pathList = pathHolder;
+    strcpy(pathList,pathHolder);
+    char* currPATH = strtok(pathList,":");
+
+    while(currPATH != NULL){
+        paths.emplace_back(currPATH);
+        currPATH = strtok(NULL, ":");
+    }
+
+    for(auto &e : paths){
+        DIR* currDirent = opendir(e);
+        if(currDirent == NULL){
+            if(false){
+                perror("execRun opendir failed");
+            }
+        }
+        else{
+            dirent* filname;
+            //error check here
+
+            while((filname = readdir(currDirent))){
+                if(strcmp(command,filname->d_name) == 0){
+                    isNull = false;
+                    return e;
+                }
+            }
+        }
+    }
+    isNull = true;
+    return NULL;
+}
 
 void printo(char** p){
     for(int c = 0; p[c] != NULL; c++){
@@ -44,7 +80,7 @@ void usernam(string& nam){
     return;
 }
 
-void execRun(char* uname, char hnam[]){
+void execvpRun(char* uname, char hnam[]){
     string uin;
     char* cmdsave;
 
@@ -103,9 +139,23 @@ void execRun(char* uname, char hnam[]){
             exit(1);
         }
         else if (pid == 0){
-            if(-1 == execvp(cmd,argv)){
-                perror("execvp failed");
-                exit(1);
+            char slash[] = "/";
+            char* slashCMD = strcat(slash, cmd);
+            bool isNull = true;
+            char* temp_cmd = strcat(execRun(cmd,isNull),slashCMD);
+           cerr << "runnign test" << endl;
+            if(isNull){
+cout << "HI THERE" << endl;
+                if(-1 == execv(cmd,argv)){
+                    perror("execvp failed");
+                    exit(1);
+                }
+            }
+            else{
+                if(-1 == execv(temp_cmd,argv)){
+                    perror("execvp failed");
+                    exit(1);
+                }
             }
             exit(0);
         }
@@ -143,7 +193,6 @@ void execRun(char* uname, char hnam[]){
 }
 
 int main(){
-    unordered_map<string, comhand> txtcmd;
     char* uname;
     char hnam[512];
     size_t hnamLen = 512;
@@ -158,7 +207,7 @@ int main(){
         uname = nam;
     }
     while(true){
-        execRun(uname,hnam);
+        execvpRun(uname,hnam);
     }
     return 0;
 }
