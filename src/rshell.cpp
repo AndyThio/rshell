@@ -5,6 +5,7 @@
 #include <cstring>
 #include <cstdio>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <vector>
@@ -12,6 +13,15 @@
 #include <dirent.h>
 using namespace std;
 
+string currwrkDir(){
+    char buf[FILENAME_MAX];
+    if(getcwd(buf,sizeof(buf)) == NULL){
+        perror("getcwd failed");
+        exit(1);
+    }
+    string ret = buf;
+    return ret;
+}
 
 char* execRun(char* command){
     vector<char*> paths;
@@ -82,6 +92,7 @@ void usernam(string& nam){
 void execvpRun(char* uname, char hnam[]){
     string uin;
     char* cmdsave;
+    cout << currwrkDir() << endl;
 
     cout << uname << "@" << hnam <<  "$ ";
     getline(cin, uin);
@@ -130,33 +141,39 @@ void execvpRun(char* uname, char hnam[]){
         if(strcmp(cmd, "exit") == 0){
             exit(0);
         }
-
-
-        int pid = fork();
-        if(pid == -1){
-            perror("fork failed");
-            exit(1);
-        }
-        else if (pid == 0){
-            if(-1 == execv(execRun(cmd),argv)){
-                perror("execvp failed");
+        else if(strcmp(cmd, "cd") == 0){
+            if(-1 == chdir(argv[1])){
+                perror("chdir failed");
                 exit(1);
             }
-            exit(0);
         }
         else{
-            int wtret;
-            int wtpid = wait(&wtret);
-            if(-1 == wtpid){
-                perror("wait failed");
+            int pid = fork();
+            if(pid == -1){
+                perror("fork failed");
                 exit(1);
             }
-
-            if (wtret == 0){
-                cmdpass = true;
+            else if (pid == 0){
+                if(-1 == execv(execRun(cmd),argv)){
+                    perror("execvp failed");
+                    exit(1);
+                }
+                exit(0);
             }
             else{
-                cmdpass = false;
+                int wtret;
+                int wtpid = wait(&wtret);
+                if(-1 == wtpid){
+                    perror("wait failed");
+                    exit(1);
+                }
+
+                if (wtret == 0){
+                    cmdpass = true;
+                }
+                else{
+                    cmdpass = false;
+                }
             }
         }
         if(symbs.size() == 0)
