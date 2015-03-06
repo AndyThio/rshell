@@ -13,8 +13,7 @@
 using namespace std;
 
 
-char* execRun(const char* command, bool &isNull){
-    isNull = true;
+char* execRun(char* command){
     vector<char*> paths;
 
     char *pathHolder = getenv("PATH");
@@ -45,14 +44,14 @@ char* execRun(const char* command, bool &isNull){
 
             while((filname = readdir(currDirent))){
                 if(strcmp(command,filname->d_name) == 0){
-                    isNull = false;
-                    return e;
+                    char slashtemp[] = "/";
+                    char* temp = strcat(slashtemp, command);
+                    return strcat(e,temp);
                 }
             }
         }
     }
-    isNull = true;
-    return NULL;
+    return command;
 }
 
 void printo(char** p){
@@ -139,23 +138,9 @@ void execvpRun(char* uname, char hnam[]){
             exit(1);
         }
         else if (pid == 0){
-            char slash[] = "/";
-            char* slashCMD = strcat(slash, cmd);
-            bool isNull = true;
-            char* temp_cmd = strcat(execRun(cmd,isNull),slashCMD);
-           cerr << "runnign test" << endl;
-            if(isNull){
-cout << "HI THERE" << endl;
-                if(-1 == execv(cmd,argv)){
-                    perror("execvp failed");
-                    exit(1);
-                }
-            }
-            else{
-                if(-1 == execv(temp_cmd,argv)){
-                    perror("execvp failed");
-                    exit(1);
-                }
+            if(-1 == execv(execRun(cmd),argv)){
+                perror("execvp failed");
+                exit(1);
             }
             exit(0);
         }
