@@ -97,7 +97,9 @@ void usernam(string& nam){
     }
     return;
 }
-
+//TODO: make sure you can link them (fix your last check thingy)
+//TODO: :wq
+//
 void execvpRun(){
     string uin;
     char* cmdsave;
@@ -132,6 +134,7 @@ void execvpRun(){
      * < == 4
      * > == 5
      * >> == 6
+     * <<< == 7
      */
     for(unsigned j = 0; j < uin.size()-1; j++){
         if(uin.at(j) == '&' && uin.at(j+1) == '&'){
@@ -154,6 +157,9 @@ void execvpRun(){
             symbs.push_back(5);
         else if(uin.at(j) == '>' && uin.at(j+1) == '>')
             symbs.push_back(6);
+        else if(uin.at(j) == '<' && uin.at(j+1) == '<'
+                    && uin.at(j+2) == '<')
+            symbs.push_back(7);
     }
     symbs.push_back(2);
 
@@ -193,6 +199,85 @@ void execvpRun(){
             else if(-1 == chdir(argv[1])){
                 perror("chdir failed");
                 exit(1);
+            }
+        }
+
+        else if(symbs.at(0) == 3){
+            char* cmdtemp3 = strtok_r(NULL, SEPS, &cmdsave);
+            char* argv4[2048];
+            clr_argv(argv4);
+            argv4[0] = strtok(cmdtemp3, " ");
+            for(int i = 1; argv4[i-1] != NULL; i++){
+                argv4[i] = strtok(NULL, " ");
+            }
+            int fd4[2];
+            if(pipe(fd4) == -1){
+                perror("pipe failed");
+                exit(1);
+            }
+            int pid4 = fork();
+            if(pid4 == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid4 == 0){
+                if(dup2(fd4[1],1)== -1){
+                    perror("dup failed");
+                    exit(1);
+                }
+                if(close(fd4[1]) == -1){
+                    perror("close failed");
+                    exit(1);
+                }
+                if(close(fd4[0])==-1){
+                    perror("close failed");
+                    exit(1);
+                }
+                if(-1 == execv(execRun(cmd),argv)){
+                    perror("exec failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            if(wait(0) == -1){
+                perror("piping failed");
+                exit(1);
+            }
+            int pid42 = fork();
+            if(pid42 == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid42 == 0){
+                if(dup2(fd4[0],0) == -1){
+                    perror("dup failed");
+                    exit(1);
+                }
+                if(close(fd4[1]) == -1){
+                    perror("close failed");
+                    exit(1);
+                }
+                if(close(fd4[0])==-1){
+                    perror("close failed");
+                    exit(1);
+                }
+                if(-1 == execv(execRun(argv4[0]),argv4)){
+                    perror("exec failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            int wtret;
+            int wtpid = wait(&wtret);
+            if(-1 == wtpid){
+                perror("wait failed");
+                exit(1);
+            }
+            if(wtret == 0){
+                cmdpass = true;
+            }
+            else{
+                cmdpass = false;
             }
         }
 
@@ -364,6 +449,69 @@ void execvpRun(){
             if(pid == -1){
                 perror("fork failed");
                 exit(1);
+            }
+        }
+
+        else if(symbs.at(0) == 7){
+            string input7 = strtok_r(NULL, SEPS, &cmdsave);
+            int fd[2];
+            if(pipe(fd) == -1){
+                perror("pipe failed");
+                exit(1);
+            }
+            if(input7.find("\"") != string::npos){
+                input7 = input7.substr(input7.find("\"")+1);
+                input7 = input7.substr(0,input7.find("\""));
+                char buf[BUFSIZ];
+                strcpy(buf, input7.c_str());
+                if(-1==write(fd[1], buf, input7.size())){
+                    perror("write failed");
+                    exit(1);
+                }
+                if(close(fd[1]) == -1){
+                    perror("close failed");
+                    exit(1);
+                }
+                int pid = fork();
+                if(pid == -1){
+                    perror("fork failed");
+                    exit(1);
+                }
+                else if(pid == 0){
+                    if(SIG_ERR == signal(SIGINT, SIG_DFL)){
+                        perror("singal failed");
+                        exit(1);
+                    }
+                    if(fd[0] >= 0){
+                        if(-1==dup2(fd[0],STDIN_FILENO)){
+                            perror("dup failed");
+                            exit(1);
+                        }
+                        if(close(fd[0]) == -1){
+                            perror("close failed");
+                            exit(1);
+                        }
+                    }
+                    if(-1 == execv(execRun(cmd),argv)){
+                        perror("execvp failed");
+                        exit(1);
+                    }
+                    exit(0);
+                }
+                else{
+                    int wtret;
+                    int wtpid = wait(&wtret);
+                    if(-1 == wtpid){
+                        perror("wait failed");
+                        exit(1);
+                    }
+                    if(wtret == 0){
+                        cmdpass = true;
+                    }
+                    else{
+                        cmdpass = false;
+                    }
+                }
             }
         }
 
