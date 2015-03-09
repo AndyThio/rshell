@@ -101,6 +101,7 @@ void usernam(string& nam){
 //TODO: :wq
 //
 void execvpRun(){
+    int numsymbs = 0;
     string uin;
     char* cmdsave;
     cout << endl << "\033[35m" << currwrkDir() << endl;
@@ -161,14 +162,13 @@ void execvpRun(){
                     && uin.at(j+2) == '<')
             symbs.push_back(7);
     }
-    symbs.push_back(2);
 
     char* cmdl = strtok_r(cstr, SEPS, &cmdsave);
-    while(symbs.size() != 0 && cmdl != NULL){
+    while(symbs.size() > numsymbs && cmdl != NULL){
         char* cmd = strtok(cmdl, " ");
         if(cmd == NULL){
-            symbs.erase(symbs.begin());
             cmdl = strtok_r(NULL, SEPS, &cmdsave);
+            numsymbs++;
         }
         else{
         char* argv[2048];
@@ -202,7 +202,7 @@ void execvpRun(){
             }
         }
 
-        else if(symbs.at(0) == 3){
+        else if(symbs.at(numsymbs) == 3){
             char* cmdtemp3 = strtok_r(NULL, SEPS, &cmdsave);
             char* argv4[2048];
             clr_argv(argv4);
@@ -281,7 +281,7 @@ void execvpRun(){
             }
         }
 
-        else if(symbs.at(0) == 4){
+        else if(symbs.at(numsymbs) == 4){
             int fdnum4;
             char* temptest4 = strtok_r(NULL, SEPS, &cmdsave);
             temptest4 = strtok(temptest4, " ");
@@ -330,7 +330,7 @@ void execvpRun(){
             }
         }
 
-        else if(symbs.at(0) == 5){
+        else if(symbs.at(numsymbs) == 5){
             int usefd5 = 1;
             int i = 1;
             while(argv[i] != NULL){
@@ -389,7 +389,7 @@ void execvpRun(){
             }
         }
 
-        else if(symbs.at(0) == 6){
+        else if(symbs.at(numsymbs) == 6){
             int usefd6 = 1;
             int i = 1;
             while(argv[i] != NULL){
@@ -452,7 +452,7 @@ void execvpRun(){
             }
         }
 
-        else if(symbs.at(0) == 7){
+        else if(symbs.at(numsymbs) == 7){
             string input7 = strtok_r(NULL, SEPS, &cmdsave);
             int fd[2];
             if(pipe(fd) == -1){
@@ -548,20 +548,20 @@ void execvpRun(){
                 }
             }
         }
-        if(symbs.size() == 0)
+        if(symbs.size() <= numsymbs)
             return;
-        if(symbs.at(0) == 0){
+        if(symbs.at(numsymbs) == 0){
             if(cmdpass == false){
                 return;
             }
         }
-        else if (symbs.at(0) == 1){
+        else if (symbs.at(numsymbs) == 1){
             if(cmdpass == true){
                 return;
             }
         }
-        symbs.erase(symbs.begin());
         cmdl = strtok_r(NULL, SEPS, &cmdsave);
+        numsymbs++;
         }
     }
 }
