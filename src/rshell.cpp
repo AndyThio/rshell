@@ -89,16 +89,20 @@ void clr_argv(char** c){
     }
 }
 void set_read(int* lpipe){
-    dup2(lpipe[0], STDIN_FILENO);
-    close(lpipe[0]);
-    close(lpipe[0]);
+    if(-1 ==dup2(lpipe[0], STDIN_FILENO)){
+        perror("dup error");
+        exit(1);
+    }
+    if(-1==close(lpipe[0])){
+        perror("closell error");
+        exit(1);
+    }
+    if(close(lpipe[0])==-1){
+        perror("closel error");
+        exit(1);
+    }
 }
 
-void set_write(int* rpipe){
-    dup2(rpipe[0], STDOUT_FILENO);
-    close(rpipe[0]);
-    close(rpipe[0]);
-}
 
 void usernam(string& nam){
     nam = getlogin();
@@ -210,6 +214,137 @@ void execvpRun(){
             else if(-1 == chdir(argv[1])){
                 perror("chdir failed");
                 exit(1);
+            }
+        }
+
+        else if(symbs.at(0) == 3 && symbs.at(1) == 3){
+            symbs.erase(symbs.begin());
+            char* cmdtemp3 = strtok_r(NULL, SEPS, &cmdsave);
+            char* argv4[2048];
+            clr_argv(argv4);
+            argv4[0] = strtok(cmdtemp3, " ");
+            for(int i = 1; argv4[i-1] != NULL; i++){
+                argv4[i] = strtok(NULL, " ");
+            }
+            int fd4[2];
+            if(pipe(fd4) == -1){
+                perror("pipe failed");
+                exit(1);
+            }
+            int lfd4[2];
+            if(pipe(fd4) == -1){
+                perror("pipe failed");
+                exit(1);
+            }
+            int pid4 = fork();
+            if(pid4 == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid4 == 0){
+
+                if(-1 ==dup2(fd4[1], STDOUT_FILENO)){
+                    perror("dup failed");
+                    exit(1);
+                }
+                if(-1 ==close(fd4[0])){
+                    perror("close11 failed");
+                    exit(1);
+                }
+                if(-1==close(fd4[1])){
+                    perror("close12 failed");
+                    exit(1);
+                }
+                if(-1 == execv(execRun(cmd),argv)){
+                    perror("exec failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            if(wait(0) == -1){
+                perror("wait failed");
+                exit(1);
+            }
+            lfd4[0] = fd4[0];
+            lfd4[1] = fd4[1];
+            if(-1==close(fd4[1])){
+                perror("close0 failed");
+                exit(1);
+            }
+
+            while(symbs.at(1) == 3){
+                symbs.erase(symbs.begin());
+                if(-1==pipe(fd4)){
+                    perror("pipe failed");
+                    exit(1);
+                }
+                int pid4 = fork();
+                if(pid4 == -1){
+                    perror("fork failed");
+                    exit(1);
+                }
+                else if(pid4 == 0){
+
+                    if(-1 ==dup2(fd4[1], STDOUT_FILENO)){
+                        perror("dup failed");
+                        exit(1);
+                    }
+                    if(-1 ==close(fd4[0])){
+                        perror("close1 failed");
+                        exit(1);
+                    }
+                    if(-1==close(fd4[1])){
+                        perror("close2 failed");
+                        exit(1);
+                    }
+                    set_read(lfd4);
+                    if(-1 == execv(execRun(cmd),argv)){
+                        perror("exec failed");
+                        exit(1);
+                    }
+                    exit(0);
+                }
+                if(wait(0) == -1){
+                    perror("wait failed");
+                    exit(1);
+                }
+                lfd4[0] = fd4[0];
+                lfd4[1] = fd4[1];
+}
+
+            int pid42 = fork();
+            if(pid42 == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid42 == 0){
+                set_read(lfd4);
+                if(-1 == execv(execRun(argv4[0]),argv4)){
+                    perror("exec failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            int wtret;
+            int wtpid = wait(&wtret);
+            if(-1 == wtpid){
+                perror("wait failed");
+                exit(1);
+            }
+
+            if(-1==close(lfd4[0])){
+                perror("close4 failed");
+                exit(1);
+            }
+            if(-1==close(lfd4[1])){
+                perror("close5 failed");
+                exit(1);
+            }
+            if(wtret == 0){
+                cmdpass = true;
+            }
+            else{
+                cmdpass = false;
             }
         }
 
