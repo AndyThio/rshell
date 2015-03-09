@@ -1,0 +1,276 @@
+Script started on Mon 09 Mar 2015 03:18:18 PM PDT
+~
+athio001@hammer $ cs100
+[0;91m
+===============================================================================
+|                                                                             |
+| You have enabled settings specific for cs100.  Everything you do is being   |
+| recorded to measure your progress in the class.                             |
+|                                                                             |
+| Important commands for the class:                                           |
+|   * calcgrade.sh          displays a detailed breakdown of your grade       |
+|   * typespeed             practice typing unix commands                     |
+|                                                                             |
+| Important commands for general C++ programming:                             |
+|   * make                  don't call g++ manually; let make do the work!    |
+|   * gdb                   the GNU debugger                                  |
+|   * valgrind              get rid of your memory leaks                      |
+|   * cppcheck              static analysis tool                              |
+|   * man                   find help about any syscall / terminal command    |
+|                                                                             |
+===============================================================================
+[0m
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~[0;95m (master) [0;36m$[0m cdr[K rshell
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~/rshell[0;95m ((singlePipe)) [0;36m$[0m cs100-runtests bin/rshell tests[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[K[Krm [K[K[Kls
+bin  LICENSE  Makefile	README.md  src	test2.txt  tests   test.txt  test.txt  typescript
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~/rshell[0;95m ((singlePipe)) [0;36m$[0m rm test2.txt
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~/rshell[0;95m ((singlePipe)) [0;36m$[0m vim [K[K[K[Kcs100-t[Kruntests bin/rshell tests/hw2-testcases 
+***********************
+* tests/hw2-testcases *
+***********************
+================================================================================
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#input redirection from existing file
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat < test.txt
+/home/csmajs/athio001/rshell
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#input redirection from nonexistant file
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat < Idontexist
+open failed: No such file or directory
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#input redirection with space
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat < test.txt
+/home/csmajs/athio001/rshell
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#input redirection without space
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat<test.txt
+/home/csmajs/athio001/rshell
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#output redirection to a file
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls > test.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test.txt
+bin
+LICENSE
+Makefile
+README.md
+src
+tests
+ test.txt
+test.txt
+typescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls >> test.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test.txt
+bin
+LICENSE
+Makefile
+README.md
+src
+tests
+ test.txt
+test.txt
+typescript
+bin
+LICENSE
+Makefile
+README.md
+src
+tests
+ test.txt
+test.txt
+typescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#output to a nonexisitant file
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls > test2.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test2.txt
+bin
+LICENSE
+Makefile
+README.md
+src
+test2.txt
+tests
+ test.txt
+test.txt
+typescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls >> test2.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test2.txt
+bin
+LICENSE
+Makefile
+README.md
+src
+test2.txt
+tests
+ test.txt
+test.txt
+typescript
+bin
+LICENSE
+Makefile
+README.md
+src
+test2.txt
+tests
+ test.txt
+test.txt
+typescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#testing spacing
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls>test.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test.txt
+bin
+LICENSE
+Makefile
+README.md
+src
+test2.txt
+tests
+ test.txt
+test.txt
+typescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls>>test.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test.txt
+bin
+LICENSE
+Makefile
+README.md
+src
+test2.txt
+tests
+ test.txt
+test.txt
+typescript
+bin
+LICENSE
+Makefile
+README.md
+src
+test2.txt
+tests
+ test.txt
+test.txt
+typescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#input redirection with (<<<<)
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat <<< "hello world"
+hello world
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#no space
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat<<<"hello world"
+hello world
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#testing EC2
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd 1> test.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test.txt
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd 1>> test.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test.txt
+/home/csmajs/athio001/rshell
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd 2> test2.txt
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test2.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39masdfasdfasdf 2> test2.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd 2>> test2.txt
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test2.txt
+execvp failed: No such file or directory
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39masdfasf 2>> test2.txt
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat test2.txt
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#testing piping
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls | grep src
+src
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#piping with no spaces
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls|grep src
+src
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mexit
+
+================================================================================
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~/rshell[0;95m ((singlePipe)) [0;36m$[0m exit
+exit
+~
+athio001@hammer $ exit
+exit
+
+Script done on Mon 09 Mar 2015 03:19:29 PM PDT
