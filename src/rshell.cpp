@@ -11,6 +11,7 @@
 #include <vector>
 #include <unordered_map>
 #include <dirent.h>
+#include <signal.h>
 using namespace std;
 
 string currwrkDir(){
@@ -92,7 +93,7 @@ void usernam(string& nam){
 void execvpRun(char* uname, char hnam[]){
     string uin;
     char* cmdsave;
-    cout << currwrkDir() << endl;
+    cout << endl << currwrkDir() << endl;
 
     cout << uname << "@" << hnam <<  "$ ";
     getline(cin, uin);
@@ -147,6 +148,11 @@ void execvpRun(char* uname, char hnam[]){
                 exit(1);
             }
         }
+        else if(strcmp(cmd, "fg") == 0){
+            if(raise(SIGCONT) != 0){
+                perror("raise failed");
+            }
+        }
         else{
             int pid = fork();
             if(pid == -1){
@@ -154,6 +160,10 @@ void execvpRun(char* uname, char hnam[]){
                 exit(1);
             }
             else if (pid == 0){
+                if(SIG_ERR == signal(SIGINT, SIG_DFL)){
+                    perror("signal failed");
+                    exit(1);
+                }
                 if(-1 == execv(execRun(cmd),argv)){
                     perror("execvp failed");
                     exit(1);
@@ -195,6 +205,10 @@ void execvpRun(char* uname, char hnam[]){
 }
 
 int main(){
+    if(SIG_ERR == signal(SIGINT, SIG_IGN)){
+        perror("signal failed");
+        exit(1);
+    }
     char* uname;
     char hnam[512];
     size_t hnamLen = 512;
