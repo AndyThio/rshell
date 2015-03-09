@@ -348,6 +348,120 @@ void execvpRun(){
             }
         }
 
+        else if(symbs.at(0) == 3 && symbs.at(1) == 5){
+            symbs.erase(symbs.begin());
+            char* cmdtemp3 = strtok_r(NULL, SEPS, &cmdsave);
+            char* argv4[2048];
+            clr_argv(argv4);
+            argv4[0] = strtok(cmdtemp3, " ");
+            for(int i = 1; argv4[i-1] != NULL; i++){
+                argv4[i] = strtok(NULL, " ");
+            }
+            int fd4[2];
+            if(pipe(fd4) == -1){
+                perror("pipe failed");
+                exit(1);
+            }
+            int lfd4[2];
+            if(pipe(fd4) == -1){
+                perror("pipe failed");
+                exit(1);
+            }
+            int pid4 = fork();
+            if(pid4 == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid4 == 0){
+
+                if(-1 ==dup2(fd4[1], STDOUT_FILENO)){
+                    perror("dup failed");
+                    exit(1);
+                }
+                if(-1 ==close(fd4[0])){
+                    perror("close failed");
+                    exit(1);
+                }
+                if(-1==close(fd4[1])){
+                    perror("close failed");
+                    exit(1);
+                }
+                if(-1 == execv(execRun(cmd),argv)){
+                    perror("exec failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            if(wait(0) == -1){
+                perror("piping failed");
+                exit(1);
+            }
+            lfd4[0] = fd4[0];
+            lfd4[1] = fd4[1];
+            if(-1==close(fd4[1])){
+                perror("close failed");
+                exit(1);
+            }
+            int usefd5 = 1;
+            int i = 1;
+            while(argv[i] != NULL){
+                if(argv[i+1] == NULL &&
+                    (strcmp(argv[i],"2") == 0 || strcmp(argv[i], "0") ==0
+                     || strcmp(argv[i], "1") ==0)){
+                    usefd5 = atoi(argv[i]);
+                    argv[i] = NULL;
+                }
+            }
+            int fdnum5;
+            char* temptest = strtok_r(NULL, SEPS, &cmdsave);
+            temptest = strtok(temptest, " ");
+            int fdopen5 = open(temptest, O_WRONLY | O_CREAT | O_TRUNC);
+            fchmod(fdopen5, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+            if(fdopen5 == -1){
+                perror("open failed");
+                exit(1);
+            }
+            int pid42 = fork();
+            if(pid42 == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid42 == 0){
+                if( -1 == ( fdnum5 = dup2(fdopen5,usefd5))){
+                    perror("dup failed");
+                    exit(1);
+                }
+                if(close(fdopen5) == -1){
+                    perror("close failed");
+                    exit(1);
+                }
+                set_read(lfd4);
+                if(-1 == execv(execRun(argv4[0]),argv4)){
+                    perror("exec failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            int wtret;
+            int wtpid = wait(&wtret);
+            if(-1 == wtpid){
+                perror("wait failed");
+                exit(1);
+            }
+            close(lfd4[0]);
+            close(lfd4[1]);
+            if(wtret == 0){
+                cmdpass = true;
+            }
+            else{
+                cmdpass = false;
+            }
+            if(-1 == close(fdopen5)){
+                perror("open failed");
+                exit(1);
+            }
+        }
+
         else if(symbs.at(0) == 3){
             char* cmdtemp3 = strtok_r(NULL, SEPS, &cmdsave);
             char* argv4[2048];
