@@ -21,86 +21,6 @@ using namespace std;
 typedef void (*redircmd) ();
 //comhands
 //exit
-void endprog(){
-    exit(0);
-}
-
-// <
-void inpip(char* innam){
-    int fdi;
-    if (-1==(fdi=open(innam,O_RDONLY))) {
-        perror ("open input failed");
-        exit(1);
-    }
-    char buf[BUFSIZ];
-    int bytesize;
-    while(bytesize = read(fdi,buf, (BUFSIZ))){
-        if(bytesize == -1){
-            perror("read failed");
-            exit(1);
-        }
-        if(-1 == write(0, buf, bytesize)){
-            perror("write to stdin failed");
-            exit(1);
-        }
-    }
-
-    if(close(fdi)){
-        perror("input file failed to close");
-    }
-    return;
-}
-
-// >
-void outpip(char* innam, int fdnum){
-    int fdo;
-    if ( -1 == (fdo=open(innam, O_WRONLY | O_CREAT | S_IRWXU
-                    | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))) {
-        perror ("open outputfile failed");
-        exit(1);
-    }
-    char buf[BUFSIZ];
-    int bytesize;
-    close(1);
-    while(bytesize = read(fdnum, buf, (BUFSIZ))){
-        if(bytesize == -1){
-            perror("read failed");
-            exit(1);
-        }
-        if(-1 == write(fdo, buf, bytesize)){
-            perror("write failed");
-            exit(1);
-        }
-    }
-    if(close(fdo)){
-        perror("close failed");
-    }
-}
-
-// >>
-void cerrpip(char* innam){
-    int fdo;
-    if ( -1 == (fdo=open(innam, O_WRONLY | O_CREAT | O_APPEND
-                    | S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH))) {
-        perror ("open outputfile failed");
-        exit(1);
-    }
-    char buf[BUFSIZ];
-    int bytesize;
-    close(2);
-    while(bytesize = read(1, buf, (BUFSIZ))){
-        if(bytesize == -1){
-            perror("read failed");
-            exit(1);
-        }
-        if(-1 == write(fdo, buf, bytesize)){
-            perror("write failed");
-            exit(1);
-        }
-    }
-    if(close(fdo)){
-        perror("close failed");
-    }
 
 string currwrkDir(){
     char buf[FILENAME_MAX];
@@ -276,38 +196,13 @@ void execvpRun(){
             }
         }
 
-        if(symbs.at(0) == 4){
-            int pid = fork();
-            if(pid == -1){
-                perror("fork failed");
-                exit(1);
-            }
-            else if(pid == 0){
-            }
-            else{
-                int wtret;
-                int wtpid = wait(&wtret);
-                if(-1 == wtpid){
-                    perror("wait failed");
-                    exit(1);
-                }
-                if(wtret == 0){
-                    cmdpass = true;
-                }
-                else{
-                    cmdpass = false;
-                }
-            }
-        }
-
-        else if(symbs.at(0) == 5){
-            int fdnum;
-            if( -1 == ( fdnum = dup(1))){
-                perror("dup failed");
-                exit(1);
-            }
-            if(-1==close(1)){
-                perror("close failed");
+        else if(symbs.at(0) == 4){
+            int fdnum4;
+            char* temptest4 = strtok_r(NULL, SEPS, &cmdsave);
+            temptest4 = strtok(temptest4, " ");
+            int fdopen4 = open(temptest4, O_RDONLY);
+            if(fdopen4 == -1){
+                perror("open failed");
                 exit(1);
             }
             int pid = fork();
@@ -316,26 +211,17 @@ void execvpRun(){
                 exit(1);
             }
             else if(pid == 0){
-                int pid2 = fork();
-                if(pid2 == -1){
-                    perror("fork failed");
+                if(SIG_ERR == signal(SIGINT, SIG_DFL)){
+                    perror("singal failed");
                     exit(1);
                 }
-                else if(pid2 == 0){
-                    if(-1 == execvp(cmd,argv)){
-                        perror("execvp failed");
-                        exit(1);
-                    }
-                    exit(0);
+                if( -1 == ( fdnum4 = dup2(fdopen4,0))){
+                    perror("dup failed");
+                    exit(1);
                 }
-                else{
-                    int wtret;
-                    int wtpid = wait(&wtret);
-                    if(-1 == wtpid){
-                        perror("wait failed");
-                        exit(1);
-                    }
-                    outpip(strtok_r(cstr, SEPS, &cmdsave),fdnum);
+                if(-1 == execv(execRun(cmd),argv)){
+                    perror("execvp failed");
+                    exit(1);
                 }
                 exit(0);
             }
@@ -353,15 +239,50 @@ void execvpRun(){
                     cmdpass = false;
                 }
             }
+            if(-1 == close(fdopen4)){
+                perror("open failed");
+                exit(1);
+            }
         }
 
-        else if(symbs.at(0) == 6){
+        else if(symbs.at(0) == 5){
+            int usefd5 = 1;
+            int i = 1;
+            while(argv[i] != NULL){
+                if(argv[i+1] == NULL &&
+                    (strcmp(argv[1],"2") == 0 || strcmp(argv[1], "0") ==0)){
+                    usefd5 = atoi(argv[1]);
+                    argv[i] = NULL;
+                }
+            }
+            int fdnum5;
+            char* temptest = strtok_r(NULL, SEPS, &cmdsave);
+            temptest = strtok(temptest, " ");
+            int fdopen5 = open(temptest, O_WRONLY | O_CREAT | O_TRUNC);
+            fchmod(fdopen5, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+            if(fdopen5 == -1){
+                perror("open failed");
+                exit(1);
+            }
             int pid = fork();
             if(pid == -1){
                 perror("fork failed");
                 exit(1);
             }
             else if(pid == 0){
+                if(SIG_ERR == signal(SIGINT, SIG_DFL)){
+                    perror("singal failed");
+                    exit(1);
+                }
+                if( -1 == ( fdnum5 = dup2(fdopen5,usefd5))){
+                    perror("dup failed");
+                    exit(1);
+                }
+                if(-1 == execv(execRun(cmd),argv)){
+                    perror("execvp failed");
+                    exit(1);
+                }
+                exit(0);
             }
             else{
                 int wtret;
@@ -376,6 +297,73 @@ void execvpRun(){
                 else{
                     cmdpass = false;
                 }
+            }
+            if(-1 == close(fdopen5)){
+                perror("open failed");
+                exit(1);
+            }
+        }
+
+        else if(symbs.at(0) == 6){
+            int usefd6 = 1;
+            int i = 1;
+            while(argv[i] != NULL){
+                if(argv[i+1] == NULL &&
+                    (strcmp(argv[1],"2") == 0 || strcmp(argv[1], "0") ==0)){
+                    usefd6 = atoi(argv[1]);
+                    argv[i] = NULL;
+                }
+            }
+            int fdnum6;
+            char* temptest6 = strtok_r(NULL, SEPS, &cmdsave);
+            temptest6 = strtok(temptest6, " ");
+            int fdopen6 = open(temptest6, O_WRONLY | O_CREAT | O_APPEND);
+            fchmod(fdopen6, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+            if(fdopen6 == -1){
+                perror("open failed");
+                exit(1);
+            }
+            int pid = fork();
+            if(pid == -1){
+                perror("fork failed");
+                exit(1);
+            }
+            else if(pid == 0){
+                if(SIG_ERR == signal(SIGINT, SIG_DFL)){
+                    perror("singal failed");
+                    exit(1);
+                }
+                if( -1 == ( fdnum6 = dup2(fdopen6,usefd6))){
+                    perror("dup failed");
+                    exit(1);
+                }
+                if(-1 == execv(execRun(cmd),argv)){
+                    perror("execvp failed");
+                    exit(1);
+                }
+                exit(0);
+            }
+            else{
+                int wtret;
+                int wtpid = wait(&wtret);
+                if(-1 == wtpid){
+                    perror("wait failed");
+                    exit(1);
+                }
+                if(wtret == 0){
+                    cmdpass = true;
+                }
+                else{
+                    cmdpass = false;
+                }
+            }
+            if(-1 == close(fdopen6)){
+                perror("open failed");
+                exit(1);
+            }
+            if(pid == -1){
+                perror("fork failed");
+                exit(1);
             }
         }
 
