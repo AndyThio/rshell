@@ -1,0 +1,197 @@
+Script started on Sun 08 Mar 2015 07:48:56 PM PDT
+~
+athio001@hammer $ cs100
+[0;91m
+===============================================================================
+|                                                                             |
+| You have enabled settings specific for cs100.  Everything you do is being   |
+| recorded to measure your progress in the class.                             |
+|                                                                             |
+| Important commands for the class:                                           |
+|   * calcgrade.sh          displays a detailed breakdown of your grade       |
+|   * typespeed             practice typing unix commands                     |
+|                                                                             |
+| Important commands for general C++ programming:                             |
+|   * make                  don't call g++ manually; let make do the work!    |
+|   * gdb                   the GNU debugger                                  |
+|   * valgrind              get rid of your memory leaks                      |
+|   * cppcheck              static analysis tool                              |
+|   * man                   find help about any syscall / terminal command    |
+|                                                                             |
+===============================================================================
+[0m
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~[0;95m (master) [0;36m$[0m cd rshell
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~/rshell[0;95m (signals) [0;36m$[0m cs100-runtests bin/rshell tests/hw3-testcases 100000
+***********************
+* tests/hw3-testcases *
+***********************
+================================================================================
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#Please note that piping and io redirection is not supported
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m# test cd
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcd ..
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd
+/home/csmajs/athio001
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mcd rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd
+/home/csmajs/athio001/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m# commands from different directories
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m# from /usr/sbin:
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mifconfig
+eth0      Link encap:Ethernet  HWaddr 00:30:48:FF:C6:5A  
+          inet addr:169.235.31.72  Bcast:169.235.31.255  Mask:255.255.255.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:101640255 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:131172383 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:58252897879 (54.2 GiB)  TX bytes:72493153291 (67.5 GiB)
+          Memory:dfe60000-dfe7ffff 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1573266 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1573266 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:673198708 (642.0 MiB)  TX bytes:673198708 (642.0 MiB)
+
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m# from /bin:
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mls
+bin  echo  LICENSE  Makefile  README.md  src  tests  typescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m# from /sbin:
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mmkfs
+Usage: mkfs [-V] [-t fstype] [fs-options] device [size]
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m# from bin/ls not in PATH
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mbin/ls
+[34mbin         [39m[92mecho[39m
+LICENSE     Makefile
+README.md   [34msrc[39m
+[34mtests       [39mtypescript
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#testing commands from a different folder
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcd ..
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd
+/home/csmajs/athio001
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mls
+#testing connectors
+pwd && ls
+a.out			    CS100  Desktop    Downloads  geany_run_script.sh  Music	Public	  rshell	  Templates  Videos
+C:\nppdf32Log\debuglog.txt  CS61   Documents  ex2	 lab3		      Pictures	randtest  sizeoftest.cpp  unguided
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39m
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39m/home/csmajs/athio001
+a.out			    CS100  Desktop    Downloads  geany_run_script.sh  Music	Public	  rshell	  Templates  Videos
+C:\nppdf32Log\debuglog.txt  CS61   Documents  ex2	 lab3		      Pictures	randtest  sizeoftest.cpp  unguided
+
+[35m/home/csmajs/athio001
+#cd with not arguments should return to home folder
+[32mathio001@hammer.cs.ucr.edu$ [39m
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mcd
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mpwd
+/home/csmajs/athio001
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39m#testing commands with flags and arguments
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mls rshell -R
+rshell:
+bin  echo  LICENSE  Makefile  README.md  src  tests  typescript
+
+rshell/bin:
+ls  rshell
+
+rshell/src:
+cp.cpp	ls.cpp	rshell.cpp  Timer.h
+
+rshell/tests:
+cp.script  hw3-testcases  ls.script  rshell.script
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39m# test ctrl c
+
+[35m/home/csmajs/athio001
+[32mathio001@hammer.cs.ucr.edu$ [39mcat
+
+[35m/home/csmajs/athio001
+^C
+[32mathio001@hammer.cs.ucr.edu$ [39m#tesing ctrl+c in a program
+telnet
+telnet
+
+[35m/home/csmajs/athio001
+^C
+[32mathio001@hammer.cs.ucr.edu$ [39m# test Ctrl+C again
+ls -R /
+ls -R /
+
+[35m/home/csmajs/athio001
+^C
+[32mathio001@hammer.cs.ucr.edu$ [39mexit
+
+================================================================================
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~/rshell[0;95m (signals) [0;36m$[0m bin/rshell
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39m#making sure that Ctrl+c works
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mcat
+
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mtelnet
+telnet> 
+[35m/home/csmajs/athio001/rshell
+[32mathio001@hammer.cs.ucr.edu$ [39mexit
+[s%%%%%%%%%%[u[0;32mathio001[0;36m@[0;32mcs100[0;36m:[0;32m~/rshell[0;95m (signals) [0;36m$[0m exit
+exit
+~
+athio001@hammer $ exit
+exit
+
+Script done on Sun 08 Mar 2015 07:50:35 PM PDT

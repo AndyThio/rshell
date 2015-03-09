@@ -5,12 +5,15 @@
 #include <cstring>
 #include <cstdio>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <vector>
 #include <unordered_map>
+#include <dirent.h>
+#include <signal.h>
 using namespace std;
 
 #define SEPS "|&;><"
@@ -98,6 +101,56 @@ void cerrpip(char* innam){
     if(close(fdo)){
         perror("close failed");
     }
+
+string currwrkDir(){
+    char buf[FILENAME_MAX];
+    if(getcwd(buf,sizeof(buf)) == NULL){
+        perror("getcwd failed");
+        exit(1);
+    }
+    string ret = buf;
+    return ret;
+}
+
+char* execRun(char* command){
+    vector<char*> paths;
+
+    char *pathHolder = getenv("PATH");
+    if (pathHolder == NULL){
+        perror("getenv failed");
+        exit(1);
+    }
+
+    char *pathList = pathHolder;
+    strcpy(pathList,pathHolder);
+    char* currPATH = strtok(pathList,":");
+
+    while(currPATH != NULL){
+        paths.emplace_back(currPATH);
+        currPATH = strtok(NULL, ":");
+    }
+
+    for(auto &e : paths){
+        DIR* currDirent = opendir(e);
+        if(currDirent == NULL){
+            if(false){
+                perror("execRun opendir failed");
+            }
+        }
+        else{
+            dirent* filname;
+            //error check here
+
+            while((filname = readdir(currDirent))){
+                if(strcmp(command,filname->d_name) == 0){
+                    char slashtemp[] = "/";
+                    char* temp = strcat(slashtemp, command);
+                    return strcat(e,temp);
+                }
+            }
+        }
+    }
+    return command;
 }
 
 void printo(char** p){
@@ -125,16 +178,30 @@ void usernam(string& nam){
     return;
 }
 
-
-void execRun(char* uname, char hnam[]){
+void execvpRun(){
     string uin;
     char* cmdsave;
+    cout << endl << "\033[35m" << currwrkDir() << endl;
 
-    cout << uname << "@" << hnam <<  "$ ";
+    char* uname;
+    char hnam[512];
+    size_t hnamLen = 512;
+    if(gethostname(hnam, hnamLen) == -1){
+    perror("gethostname failed");
+    exit(1);
+    }
+    uname = getlogin();
+    if(uname ==  NULL){
+        perror("Username could not be obtained");
+        char nam[] = "unknown";
+        uname = nam;
+    }
+    cout << "\033[32m" << uname << "@" << hnam <<  "$ \033[39m";
     getline(cin, uin);
     if((uin.size() != 0 && uin.at(0) == '#')|| uin.size() == 0)
         return;
-    char* cstr = new char [uin.length()+1];
+    char ctorthing[BUFSIZ];
+    char* cstr = ctorthing;
     strcpy(cstr, uin.c_str());
     vector<int> symbs;
     cstr = strtok(cstr, "#");
@@ -190,6 +257,23 @@ void execRun(char* uname, char hnam[]){
         }
         if(strcmp(cmd, "exit") == 0){
             exit(0);
+        }
+        else if(strcmp(cmd, "cd") == 0){
+            if(argv[1] == NULL){
+                char* homevar = getenv("HOME");
+                if (homevar == NULL){
+                    perror("getenv failed");
+                    exit(1);
+                }
+                if(-1 == chdir(homevar)){
+                    perror("chdir failed");
+                    exit(1);
+                }
+            }
+            else if(-1 == chdir(argv[1])){
+                perror("chdir failed");
+                exit(1);
+            }
         }
 
         if(symbs.at(0) == 4){
@@ -302,7 +386,11 @@ void execRun(char* uname, char hnam[]){
                 exit(1);
             }
             else if (pid == 0){
-                if(-1 == execvp(cmd,argv)){
+                if(SIG_ERR == signal(SIGINT, SIG_DFL)){
+                    perror("singal failed");
+                    exit(1);
+                }
+                if(-1 == execv(execRun(cmd),argv)){
                     perror("execvp failed");
                     exit(1);
                 }
@@ -342,22 +430,17 @@ void execRun(char* uname, char hnam[]){
     }
 }
 
+void sigHandler(int sig){
+    execvpRun();
+}
+
 int main(){
-    char* uname;
-    char hnam[512];
-    size_t hnamLen = 512;
-    if(gethostname(hnam, hnamLen) == -1){
-    perror("gethostname failed");
-    exit(1);
-    }
-    uname = getlogin();
-    if(uname ==  NULL){
-        perror("Username could not be obtained");
-        char nam[] = "unknown";
-        uname = nam;
+    if(SIG_ERR == signal(SIGINT,sigHandler )){
+        perror("signal failed");
+        exit(1);
     }
     while(true){
-        execRun(uname,hnam);
+        execvpRun();
     }
     return 0;
 }
