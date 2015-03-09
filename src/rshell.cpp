@@ -88,6 +88,17 @@ void clr_argv(char** c){
         c[i] = NULL;
     }
 }
+void set_read(int* lpipe){
+    dup2(lpipe[0], STDIN_FILENO);
+    close(lpipe[0]);
+    close(lpipe[0]);
+}
+
+void set_write(int* rpipe){
+    dup2(rpipe[0], STDOUT_FILENO);
+    close(rpipe[0]);
+    close(rpipe[0]);
+}
 
 void usernam(string& nam){
     nam = getlogin();
@@ -215,21 +226,27 @@ void execvpRun(){
                 perror("pipe failed");
                 exit(1);
             }
+            int lfd4[2];
+            if(pipe(fd4) == -1){
+                perror("pipe failed");
+                exit(1);
+            }
             int pid4 = fork();
             if(pid4 == -1){
                 perror("fork failed");
                 exit(1);
             }
             else if(pid4 == 0){
-                if(dup2(fd4[1],1)== -1){
+
+                if(-1 ==dup2(fd4[1], STDOUT_FILENO)){
                     perror("dup failed");
                     exit(1);
                 }
-                if(close(fd4[1]) == -1){
+                if(-1 ==close(fd4[0])){
                     perror("close failed");
                     exit(1);
                 }
-                if(close(fd4[0])==-1){
+                if(-1==close(fd4[1])){
                     perror("close failed");
                     exit(1);
                 }
@@ -243,24 +260,20 @@ void execvpRun(){
                 perror("piping failed");
                 exit(1);
             }
+            lfd4[0] = fd4[0];
+            lfd4[1] = fd4[1];
+            if(-1==close(fd4[1])){
+                perror("close failed");
+                exit(1);
+            }
+
             int pid42 = fork();
             if(pid42 == -1){
                 perror("fork failed");
                 exit(1);
             }
             else if(pid42 == 0){
-                if(dup2(fd4[0],0) == -1){
-                    perror("dup failed");
-                    exit(1);
-                }
-                if(close(fd4[1]) == -1){
-                    perror("close failed");
-                    exit(1);
-                }
-                if(close(fd4[0])==-1){
-                    perror("close failed");
-                    exit(1);
-                }
+                set_read(lfd4);
                 if(-1 == execv(execRun(argv4[0]),argv4)){
                     perror("exec failed");
                     exit(1);
@@ -273,6 +286,8 @@ void execvpRun(){
                 perror("wait failed");
                 exit(1);
             }
+            close(lfd4[0]);
+            close(lfd4[1]);
             if(wtret == 0){
                 cmdpass = true;
             }
@@ -288,7 +303,7 @@ void execvpRun(){
             int fdopen4 = open(temptest4, O_RDONLY);
             if(fdopen4 == -1){
                 perror("open failed");
-                exit(1);
+                return;
             }
             int pid = fork();
             if(pid == -1){
@@ -335,8 +350,9 @@ void execvpRun(){
             int i = 1;
             while(argv[i] != NULL){
                 if(argv[i+1] == NULL &&
-                    (strcmp(argv[1],"2") == 0 || strcmp(argv[1], "0") ==0)){
-                    usefd5 = atoi(argv[1]);
+                    (strcmp(argv[i],"2") == 0 || strcmp(argv[i], "0") ==0
+                     || strcmp(argv[i], "1") ==0)){
+                    usefd5 = atoi(argv[i]);
                     argv[i] = NULL;
                 }
             }
@@ -361,6 +377,10 @@ void execvpRun(){
                 }
                 if( -1 == ( fdnum5 = dup2(fdopen5,usefd5))){
                     perror("dup failed");
+                    exit(1);
+                }
+                if(close(fdopen5) == -1){
+                    perror("close failed");
                     exit(1);
                 }
                 if(-1 == execv(execRun(cmd),argv)){
@@ -394,8 +414,9 @@ void execvpRun(){
             int i = 1;
             while(argv[i] != NULL){
                 if(argv[i+1] == NULL &&
-                    (strcmp(argv[1],"2") == 0 || strcmp(argv[1], "0") ==0)){
-                    usefd6 = atoi(argv[1]);
+                    (strcmp(argv[i],"2") == 0 || strcmp(argv[i], "0") ==0
+                     || strcmp(argv[i],"1") == 0)){
+                    usefd6 = atoi(argv[i]);
                     argv[i] = NULL;
                 }
             }
@@ -420,6 +441,10 @@ void execvpRun(){
                 }
                 if( -1 == ( fdnum6 = dup2(fdopen6,usefd6))){
                     perror("dup failed");
+                    exit(1);
+                }
+                if(close(fdopen6) == -1){
+                    perror("close failed");
                     exit(1);
                 }
                 if(-1 == execv(execRun(cmd),argv)){
